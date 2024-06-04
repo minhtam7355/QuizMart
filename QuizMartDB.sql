@@ -15,9 +15,8 @@ CREATE TABLE Roles (
 
 -- Inserting role data
 INSERT INTO Roles (RoleID, RoleName) VALUES
-(NEWID(), 'Guest'),
-(NEWID(), 'Free User'),
-(NEWID(), 'Premium User'),
+(NEWID(), 'FreeUser'),
+(NEWID(), 'PremiumUser'),
 (NEWID(), 'Moderator'),
 (NEWID(), 'Admin');
 GO
@@ -39,9 +38,9 @@ CREATE TABLE Users (
 );
 GO
 
--- Table: Quizzes
-CREATE TABLE Quizzes (
-  QuizID UNIQUEIDENTIFIER PRIMARY KEY,
+-- Table: Decks
+CREATE TABLE Decks (
+  DeckID UNIQUEIDENTIFIER PRIMARY KEY,
   HostID UNIQUEIDENTIFIER NOT NULL,
   Title VARCHAR(100),
   Description TEXT,
@@ -55,48 +54,24 @@ CREATE TABLE Quizzes (
 );
 GO
 
--- Table: Questions
-CREATE TABLE Questions (
-  QuestionID UNIQUEIDENTIFIER PRIMARY KEY,
-  QuizID UNIQUEIDENTIFIER NOT NULL,
+-- Table: Quizzes
+CREATE TABLE Quizzes (
+  QuizID UNIQUEIDENTIFIER PRIMARY KEY,
+  DeckID UNIQUEIDENTIFIER NOT NULL,
   Type VARCHAR(50),
   QuestionText TEXT,
-  FOREIGN KEY (QuizID) REFERENCES Quizzes(QuizID)
+  Favorite BIT,
+  FOREIGN KEY (DeckID) REFERENCES Decks(DeckID)
 );
 GO
 
--- Table: Answers
-CREATE TABLE Answers (
-  AnswerID UNIQUEIDENTIFIER PRIMARY KEY,
-  QuestionID UNIQUEIDENTIFIER NOT NULL,
+-- Table: Choices
+CREATE TABLE Choices (
+  ChoiceID UNIQUEIDENTIFIER PRIMARY KEY,
+  QuizID UNIQUEIDENTIFIER NOT NULL,
   Content TEXT,
   IsCorrect BIT,
-  FOREIGN KEY (QuestionID) REFERENCES Questions(QuestionID)
-);
-GO
-
--- Table: QuizResults
-CREATE TABLE QuizResults (
-  ResultID UNIQUEIDENTIFIER PRIMARY KEY,
-  UserID UNIQUEIDENTIFIER NOT NULL,
-  QuizID UNIQUEIDENTIFIER NOT NULL,
-  Score INT,
-  StartedAt DATETIME,
-  FinishedAt DATETIME,
-  FOREIGN KEY (UserID) REFERENCES Users(UserID),
   FOREIGN KEY (QuizID) REFERENCES Quizzes(QuizID)
 );
 GO
 
--- Table: UserAnswers
-CREATE TABLE UserAnswers (
-  UserAnswerID UNIQUEIDENTIFIER PRIMARY KEY,
-  ResultID UNIQUEIDENTIFIER NOT NULL,
-  QuestionID UNIQUEIDENTIFIER NOT NULL,
-  AnswerID UNIQUEIDENTIFIER NOT NULL,
-  IsCorrect BIT,
-  FOREIGN KEY (ResultID) REFERENCES QuizResults(ResultID),
-  FOREIGN KEY (QuestionID) REFERENCES Questions(QuestionID),
-  FOREIGN KEY (AnswerID) REFERENCES Answers(AnswerID)
-);
-GO
