@@ -31,5 +31,9 @@ public partial class User
 
     public virtual ICollection<Deck> DeckModerators { get; set; } = new List<Deck>();
 
+    public virtual ICollection<Request> RequestHosts { get; set; } = new List<Request>();
+
+    public virtual ICollection<Request> RequestModerators { get; set; } = new List<Request>();
+
     public virtual Role? Role { get; set; }
 }

@@ -22,18 +22,20 @@ public partial class QuizMartDbContext : DbContext
 
     public virtual DbSet<Quiz> Quizzes { get; set; }
 
+    public virtual DbSet<Request> Requests { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("name=QuizMartConnectionString");
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:QuizMartConnectionString");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Choice>(entity =>
         {
-            entity.HasKey(e => e.ChoiceId).HasName("PK__Choices__76F516868F5D5FFB");
+            entity.HasKey(e => e.ChoiceId).HasName("PK__Choices__76F51686692DE63A");
 
             entity.Property(e => e.ChoiceId)
                 .ValueGeneratedNever()
@@ -43,23 +45,20 @@ public partial class QuizMartDbContext : DbContext
 
             entity.HasOne(d => d.Quiz).WithMany(p => p.Choices)
                 .HasForeignKey(d => d.QuizId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Choices__QuizID__4316F928");
         });
 
         modelBuilder.Entity<Deck>(entity =>
         {
-            entity.HasKey(e => e.DeckId).HasName("PK__Decks__76B5444CB77F3F94");
+            entity.HasKey(e => e.DeckId).HasName("PK__Decks__76B5444C9B589406");
 
             entity.Property(e => e.DeckId)
                 .ValueGeneratedNever()
                 .HasColumnName("DeckID");
             entity.Property(e => e.Description).HasColumnType("text");
-            entity.Property(e => e.EndsAt).HasColumnType("datetime");
             entity.Property(e => e.HostId).HasColumnName("HostID");
             entity.Property(e => e.ModeratorId).HasColumnName("ModeratorID");
             entity.Property(e => e.PublishedAt).HasColumnType("datetime");
-            entity.Property(e => e.StartsAt).HasColumnType("datetime");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
                 .IsUnicode(false);
@@ -79,7 +78,7 @@ public partial class QuizMartDbContext : DbContext
 
         modelBuilder.Entity<Quiz>(entity =>
         {
-            entity.HasKey(e => e.QuizId).HasName("PK__Quizzes__8B42AE6E939DF2CF");
+            entity.HasKey(e => e.QuizId).HasName("PK__Quizzes__8B42AE6EDEB4A691");
 
             entity.Property(e => e.QuizId)
                 .ValueGeneratedNever()
@@ -92,13 +91,41 @@ public partial class QuizMartDbContext : DbContext
 
             entity.HasOne(d => d.Deck).WithMany(p => p.Quizzes)
                 .HasForeignKey(d => d.DeckId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Quizzes__DeckID__403A8C7D");
+        });
+
+        modelBuilder.Entity<Request>(entity =>
+        {
+            entity.HasKey(e => e.RequestId).HasName("PK__Requests__33A8519AAA1815B5");
+
+            entity.Property(e => e.RequestId)
+                .ValueGeneratedNever()
+                .HasColumnName("RequestID");
+            entity.Property(e => e.DeckId).HasColumnName("DeckID");
+            entity.Property(e => e.HostId).HasColumnName("HostID");
+            entity.Property(e => e.ModeratorId).HasColumnName("ModeratorID");
+            entity.Property(e => e.RequestDate).HasColumnType("datetime");
+            entity.Property(e => e.RequestType)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Deck).WithMany(p => p.Requests)
+                .HasForeignKey(d => d.DeckId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Requests__DeckID__45F365D3");
+
+            entity.HasOne(d => d.Host).WithMany(p => p.RequestHosts)
+                .HasForeignKey(d => d.HostId)
+                .HasConstraintName("FK__Requests__HostID__46E78A0C");
+
+            entity.HasOne(d => d.Moderator).WithMany(p => p.RequestModerators)
+                .HasForeignKey(d => d.ModeratorId)
+                .HasConstraintName("FK__Requests__Modera__47DBAE45");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE3A679599CC");
+            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE3A469F7EE2");
 
             entity.Property(e => e.RoleId)
                 .ValueGeneratedNever()
@@ -110,7 +137,7 @@ public partial class QuizMartDbContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC2B3F406C");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACB73E9EA0");
 
             entity.Property(e => e.UserId)
                 .ValueGeneratedNever()
