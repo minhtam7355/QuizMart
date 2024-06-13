@@ -1,4 +1,6 @@
-﻿namespace QuizMart.Models.ViewModels
+﻿using static QuizMart.Models.DomainModels.User;
+
+namespace QuizMart.Models.ViewModels
 {
     public class UserInfo
     {
@@ -22,6 +24,6 @@
 
         public string? ProfilePicture { get; set; }
 
-        public string? Role { get; set; }
+        public string? Role { get; set; }        
     }
 }
