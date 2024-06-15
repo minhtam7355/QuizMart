@@ -1,6 +1,7 @@
 ﻿using QuizMart.Models.ViewModels;
+using QuizMart.Models.DomainModels;
 
-namespace SWP391_ESMS.Repositories
+namespace QuizMart.Repositories
 {
     public interface IAccessRepository
     {

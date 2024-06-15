@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using QuizMart.Context;
+using QuizMart.Repositories;
 using QuizMart.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
@@ -49,8 +51,16 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 
 ////Connect to the database
 //builder.Services.AddDbContext<ESMSDbContext>(option =>
-//    option.UseSqlServer(builder.Configuration
-//    .GetConnectionString("ESMSConnectionString")));
+//  option.UseSqlServer(builder.Configuration
+//.GetConnectionString("ESMSConnectionString")));
+
+// Register services
+builder.Services.AddScoped<IQuizRepository, QuizRepository>();
+builder.Services.AddScoped<IChoiceRepository, ChoiceRepository>();
+// Add services to the container.
+builder.Services.AddControllers();
+builder.Services.AddDbContext<QuizMartDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAutoMapper(typeof(Program));
 
