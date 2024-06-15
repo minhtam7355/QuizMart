@@ -62,6 +62,13 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<QuizMartDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDbContext<QuizMartDbContext>(options =>
+       options.UseSqlServer(builder.Configuration.GetConnectionString("QuizMartConnectionString")));
+
+builder.Services.AddScoped<IDeckRepository, DeckRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAccessRepository, AccessRepository>();
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
