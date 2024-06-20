@@ -24,4 +24,6 @@ public partial class Deck
     public virtual User? Moderator { get; set; }
 
     public virtual ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
+
+    public virtual ICollection<Request> Requests { get; set; } = new List<Request>();
 }
