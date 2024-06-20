@@ -58,6 +58,7 @@ builder.Services.AddDbContext<QuizMartDbContext>(options =>
        options.UseSqlServer(builder.Configuration.GetConnectionString("QuizMartConnectionString")));
 
 builder.Services.AddScoped<IDeckRepository, DeckRepository>();
+builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccessRepository, AccessRepository>();
 

@@ -15,10 +15,6 @@ public partial class Deck
 
     public DateTime? PublishedAt { get; set; }
 
-    public DateTime? StartsAt { get; set; }
-
-    public DateTime? EndsAt { get; set; }
-
     public string? Status { get; set; }
 
     public Guid? ModeratorId { get; set; }
