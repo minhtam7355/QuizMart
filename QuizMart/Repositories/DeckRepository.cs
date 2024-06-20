@@ -57,8 +57,6 @@ namespace QuizMart.Repositories
                 existingDeck.Title = deck.Title;
                 existingDeck.Description = deck.Description;
                 existingDeck.PublishedAt = deck.PublishedAt;
-                existingDeck.StartsAt = deck.StartsAt;
-                existingDeck.EndsAt = deck.EndsAt;
                 existingDeck.ModeratorId = deck.ModeratorId;
 
                 // Save the changes

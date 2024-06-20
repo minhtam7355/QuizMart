@@ -10,6 +10,6 @@ namespace QuizMart.Models.ViewModels
         public string QuestionText { get; set; }
         public Boolean isFavorite { get; set; }
 
-        public List<ChoiceModel> choices { get; set; }
+        public List<ChoiceModel> Choices { get; set; }
     }
 }

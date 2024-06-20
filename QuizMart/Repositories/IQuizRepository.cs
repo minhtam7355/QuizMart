@@ -10,6 +10,7 @@ namespace QuizMart.Repositories
     {
         Task AddQuizAsync(QuizModel quiz);
         Task AddChoiceAsync(ChoiceModel choice);
-        Task SaveChangesAsync();
+        Task<ICollection<QuizModel>> GetAllQuizzes();
+        Task<ICollection<ChoiceModel>> GetAllChoices();
     }
 }

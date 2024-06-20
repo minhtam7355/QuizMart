@@ -55,11 +55,9 @@ public partial class QuizMartDbContext : DbContext
                 .ValueGeneratedNever()
                 .HasColumnName("DeckID");
             entity.Property(e => e.Description).HasColumnType("text");
-            entity.Property(e => e.EndsAt).HasColumnType("datetime");
             entity.Property(e => e.HostId).HasColumnName("HostID");
             entity.Property(e => e.ModeratorId).HasColumnName("ModeratorID");
             entity.Property(e => e.PublishedAt).HasColumnType("datetime");
-            entity.Property(e => e.StartsAt).HasColumnType("datetime");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
                 .IsUnicode(false);

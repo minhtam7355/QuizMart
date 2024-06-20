@@ -32,21 +32,21 @@ namespace QuizMart.Repositories
             };
 
             _context.Quizzes.Add(quizEntity);
-            await SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-            foreach (var choice in quiz.choices)
+            foreach (var choice in quiz.Choices)
             {
                 var choiceEntity = new Choice // Assume ChoiceEntity is the corresponding domain model or entity
                 {
                     ChoiceId = choice.ChoiceID,
                     QuizId = quiz.QuizID,
-                    Content = choice.content,
+                    Content = choice.Content,
                     IsCorrect = choice.IsCorrect
                 };
                 _context.Choices.Add(choiceEntity);
             }
 
-            await SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task AddChoiceAsync(ChoiceModel choice)
@@ -57,7 +57,7 @@ namespace QuizMart.Repositories
                 {
                     ChoiceId = choice.ChoiceID,
                     QuizId = choice.QuizID,
-                    Content = choice.content,
+                    Content = choice.Content,
                     IsCorrect = choice.IsCorrect
                 };
 
@@ -65,17 +65,20 @@ namespace QuizMart.Repositories
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
-            {
-                
-
+            {                
                 // Rethrow the exception or return a specific response based on your application logic
                 throw new ApplicationException("Error occurred while saving choice to database.", ex);
             }
         }
 
-        public async Task SaveChangesAsync()
+        public async Task<ICollection<QuizModel>> GetAllQuizzes()
         {
-            await _context.SaveChangesAsync();
+            return (ICollection<QuizModel>)await _context.Quizzes.ToListAsync();
+        }
+
+        public Task<ICollection<ChoiceModel>> GetAllChoices()
+        {
+            throw new NotImplementedException();
         }
     }
 }

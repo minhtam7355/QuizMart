@@ -34,8 +34,6 @@ namespace QuizMart.Helpers
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.PublishedAt, opt => opt.MapFrom(src => src.PublishedAt))
-                .ForMember(dest => dest.StartsAt, opt => opt.MapFrom(src => src.StartsAt))
-                .ForMember(dest => dest.EndsAt, opt => opt.MapFrom(src => src.EndsAt))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.ModeratorId, opt => opt.MapFrom(src => src.ModeratorId));
 

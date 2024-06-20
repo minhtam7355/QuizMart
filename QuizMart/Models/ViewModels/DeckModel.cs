@@ -8,13 +8,9 @@ namespace QuizMart.Models.ViewModels
         public Guid UserId { get; set; }
         public string DeckTitle { get; set; }
         public string DeckDescription { get; set;}
-
         public DateTime Published { get; set; }
-        public string status { get; set; }
+        public string Status { get; set; }
         public Guid ModId { get; set; }
-
-        public List<QuizModel> quizzes { get; set; }
-
-
+        public List<QuizModel> Quizzes { get; set; }
     }
 }

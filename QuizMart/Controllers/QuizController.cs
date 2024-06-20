@@ -19,6 +19,24 @@ namespace QuizMart.Controllers
             _choiceRepository = choiceRepository;
         }
 
+        #region Get-all-Quizzez
+        [HttpGet]
+        [Route("Get-all-Quizzez")]
+        public async Task<IActionResult> GetAllQuizzes()
+        {
+            try
+            {
+                var quizzes = await _quizRepository.GetAllQuizzes();
+                return Ok(quizzes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region Create-Quiz
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> CreateQuiz([FromBody] QuizModel quizModel)
@@ -39,5 +57,44 @@ namespace QuizMart.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        #endregion
+
+        #region Get-all-Choices
+        [HttpGet]
+        [Route("Get-all-Choices")]
+        public async Task<IActionResult> GetAllChoices()
+        {
+            try
+            {
+                var choices = await _quizRepository.GetAllChoices();
+                return Ok(choices);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region Create-Choice
+        [HttpPost]
+        [Route("Create-choice")]
+        public async Task<IActionResult> CreateChoice([FromBody] ChoiceModel choiceModel)
+        {
+            if (choiceModel == null)
+                return BadRequest("Choice model cannot be null.");
+
+            try
+            {
+                await _quizRepository.AddChoiceAsync(choiceModel);
+                return Ok("Choice created successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        #endregion
+
     }
 }
