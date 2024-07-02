@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using QuizMart.Context;
 using QuizMart.Repositories;
+using QuizMart.Services;
 using QuizMart.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
@@ -61,6 +62,7 @@ builder.Services.AddScoped<IDeckRepository, DeckRepository>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccessRepository, AccessRepository>();
+builder.Services.AddScoped<IAccessService, AccessService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 

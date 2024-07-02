@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using QuizMart.Models.ViewModels;
-using QuizMart.Repositories;
+using QuizMart.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -14,13 +14,13 @@ namespace QuizMart.Controllers
     [AllowAnonymous]
     public class AccessController : ControllerBase
     {
-        private IConfiguration _config;
-        private readonly IAccessRepository _accessRepo;
+        private readonly IConfiguration _config;
+        private readonly IAccessService _accessService;
 
-        public AccessController(IConfiguration config, IAccessRepository accessRepo)
+        public AccessController(IConfiguration config, IAccessService accessService)
         {
             _config = config;
-            _accessRepo = accessRepo;
+            _accessService = accessService;
         }
 
         [AllowAnonymous]
@@ -28,7 +28,7 @@ namespace QuizMart.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             IActionResult response = Unauthorized();
-            var user = await _accessRepo.Login(model);
+            var user = await _accessService.Login(model);
 
             if (user != null)
             {
@@ -46,12 +46,12 @@ namespace QuizMart.Controllers
             if (user != null)
             {
                 var claims = new[] {
-                        new Claim(JwtRegisteredClaimNames.Sub, _config["Jwt:Subject"]!),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                        new Claim(ClaimTypes.Sid, user.UserId.ToString()),
-                        new Claim(ClaimTypes.Role, user.Role!)
-                    };
+                    new Claim(JwtRegisteredClaimNames.Sub, _config["Jwt:Subject"]!),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                    new Claim(ClaimTypes.Sid, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role!)
+                };
 
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
                 var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -82,7 +82,7 @@ namespace QuizMart.Controllers
         {
             IActionResult response = Unauthorized();
 
-            var success = await _accessRepo.Signup(model);
+            var success = await _accessService.Signup(model);
 
             if (success)
             {
@@ -94,7 +94,6 @@ namespace QuizMart.Controllers
             }
 
             return response;
-
         }
     }
 }
