@@ -1,47 +1,61 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using QuizMart.Models.DomainModels;
 using QuizMart.Models.ViewModels;
-using QuizMart.Repositories;
+using QuizMart.Services;
+using System.Security.Claims;
 
 namespace QuizMart.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DeckController : ControllerBase
     {
-        private readonly IDeckRepository _deckRepository;
-        private IConfiguration _config;
-        public DeckController(IDeckRepository deckRepository, IConfiguration config)
+        private readonly IDeckService _deckService;
+
+        public DeckController(IDeckService deckService)
         {
-            _deckRepository = deckRepository;
-            _config = config;
+            _deckService = deckService;
         }
 
         #region Get All Decks
         [HttpGet("Get-all-Decks")]
         public async Task<IActionResult> GetAllDecks()
         {
-            var decks = await _deckRepository.GetAllDecks();
+            var decks = await _deckService.GetAllDecks();
             return Ok(decks);
         }
         #endregion
 
         #region Add Deck
         [HttpPost("Add-Deck")]
-        public async Task<IActionResult> AddDeck([FromBody] DeckViewModel deck)
+        public async Task<IActionResult> AddDeck([FromBody] DeckModel deckModel)
         {
-            var result = await _deckRepository.AddDeck(deck);
-            return Ok(result);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (Guid.TryParse(userId, out var hostId))
+            {
+                deckModel.UserId = hostId; // Ensure the userId in the model is set from the token
+                var result = await _deckService.AddDeck(deckModel);
+                if (result)
+                {
+                    return Ok("Deck created successfully.");
+                }
+                return BadRequest("Failed to create deck.");
+            }
+            return Unauthorized();
         }
         #endregion
 
         #region Update Deck
         [HttpPut("Update-Deck")]
-        public async Task<IActionResult> UpdateDeck([FromBody] Deck deck)
+        public async Task<IActionResult> UpdateDeck([FromBody] DeckModel deckModel)
         {
-            var result = await _deckRepository.UpdateDeck(deck);
-            return Ok(result);
+            var result = await _deckService.UpdateDeck(deckModel);
+            if (result)
+            {
+                return Ok("Deck updated successfully.");
+            }
+            return BadRequest("Failed to update deck.");
         }
         #endregion
 
@@ -49,8 +63,12 @@ namespace QuizMart.Controllers
         [HttpDelete("Delete-Deck")]
         public async Task<IActionResult> DeleteDeck([FromBody] Guid deckId)
         {
-            var result = await _deckRepository.DeleteDeck(deckId);
-            return Ok(result);
+            var result = await _deckService.DeleteDeck(deckId);
+            if (result)
+            {
+                return Ok("Deck deleted successfully.");
+            }
+            return BadRequest("Failed to delete deck.");
         }
         #endregion
     }
