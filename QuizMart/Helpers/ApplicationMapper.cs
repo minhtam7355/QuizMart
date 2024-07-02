@@ -45,6 +45,19 @@ namespace QuizMart.Helpers
                 .ForMember(dest => dest.HomeAddress, opt => opt.MapFrom(src => src.HomeAddress))
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender));
+
+            CreateMap<QuizModel, Quiz>()
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.DeckId, opt => opt.MapFrom(src => src.DeckID))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+                .ForMember(dest => dest.QuestionText, opt => opt.MapFrom(src => src.QuestionText))
+                .ForMember(dest => dest.Favorite, opt => opt.MapFrom(src => src.isFavorite));
+
+            CreateMap<ChoiceModel, Choice>()
+                .ForMember(dest => dest.ChoiceId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(src => src.QuizID))
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+                .ForMember(dest => dest.IsCorrect, opt => opt.MapFrom(src => src.IsCorrect));
         }
     }
 }

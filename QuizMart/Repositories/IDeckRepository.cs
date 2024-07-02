@@ -9,5 +9,6 @@ namespace QuizMart.Repositories
         public Task<string> AddDeck(DeckViewModel deck);
         public Task<string> UpdateDeck(Deck deck);
         public Task<string> DeleteDeck(Guid deckId);
+        public Task<DeckViewModel> SearchDeckByKeyword(string keyword);
     }
 }

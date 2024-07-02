@@ -71,14 +71,8 @@ namespace QuizMart.Repositories
             }
         }
 
-        public async Task<ICollection<QuizModel>> GetAllQuizzes()
-        {
-            return (ICollection<QuizModel>)await _context.Quizzes.ToListAsync();
-        }
+        public async Task<ICollection<Quiz>> GetAllQuizzes() => await _context.Quizzes.ToListAsync();
 
-        public Task<ICollection<ChoiceModel>> GetAllChoices()
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<ICollection<Choice>> GetAllChoices() => await _context.Choices.ToListAsync();
     }
 }

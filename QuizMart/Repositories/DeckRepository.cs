@@ -46,6 +46,11 @@ namespace QuizMart.Repositories
             return await _dbContext.Decks.ToListAsync();
         }
 
+        public async Task<DeckViewModel> SearchDeckByKeyword(string keyword)
+        {
+            return await _dbContext.Decks.Where(d => d.Title.Contains(keyword)).Select(d => _mapper.Map<DeckViewModel>(d)).FirstOrDefaultAsync();
+        }
+
         public async Task<string> UpdateDeck(Deck deck)
         {
             // Find the existing deck

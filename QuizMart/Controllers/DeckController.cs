@@ -11,10 +11,12 @@ namespace QuizMart.Controllers
     public class DeckController : ControllerBase
     {
         private readonly IDeckRepository _deckRepository;
+        private readonly IRequestRepository _requestRepository;
         private IConfiguration _config;
-        public DeckController(IDeckRepository deckRepository, IConfiguration config)
+        public DeckController(IDeckRepository deckRepository, IRequestRepository requestRepository, IConfiguration config)
         {
             _deckRepository = deckRepository;
+            _requestRepository = requestRepository;
             _config = config;
         }
 
@@ -31,8 +33,17 @@ namespace QuizMart.Controllers
         [HttpPost("Add-Deck")]
         public async Task<IActionResult> AddDeck([FromBody] DeckViewModel deck)
         {
-            var result = await _deckRepository.AddDeck(deck);
-            return Ok(result);
+            try
+            {
+                var userID = User.Claims.FirstOrDefault(c => c.Type == "UserID").Value;
+                await _requestRepository.CreateRequestForDeck(Guid.Parse(userID), deck.DeckId);
+                return Ok("Request successfully");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
         #endregion
 
@@ -53,5 +64,15 @@ namespace QuizMart.Controllers
             return Ok(result);
         }
         #endregion
+
+        #region Search Deck By Keyword
+        [HttpGet("Search-Deck")]
+        public async Task<IActionResult> SearchDeckByKeyword([FromQuery] string keyword)
+        {
+            var deck = await _deckRepository.SearchDeckByKeyword(keyword);
+            return Ok(deck);
+        }
+        #endregion
+
     }
 }

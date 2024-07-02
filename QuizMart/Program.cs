@@ -60,6 +60,7 @@ builder.Services.AddDbContext<QuizMartDbContext>(options =>
 builder.Services.AddScoped<IDeckRepository, DeckRepository>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IAccessRepository, AccessRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program));
