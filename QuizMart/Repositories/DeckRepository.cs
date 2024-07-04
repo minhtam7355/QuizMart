@@ -16,56 +16,69 @@ namespace QuizMart.Repositories
             _mapper = mapper;
         }
 
-        public Task<string> AddDeck(DeckViewModel deck)
-        {
-            try 
-            {
-                Deck newDeck = _mapper.Map<Deck>(deck);
-                _dbContext.Decks.Add(newDeck);
-                _dbContext.SaveChanges();
-                return Task.FromResult("Deck added successfully");
-            }catch(Exception ex)
-            {
-                return Task.FromResult(ex.Message);
-            }            
-        }
-        public Task<string> DeleteDeck(Guid deckId)
+        public async Task<string> AddDeck(DeckModel deckModel)
         {
             try
             {
-                _dbContext.Decks.Remove(_dbContext.Decks.Find(deckId));
-                _dbContext.SaveChanges();
-                return Task.FromResult("Deck deleted successfully");
-            }catch (Exception ex)
-            {
-                return Task.FromResult(ex.Message);
-            }
-        }
-        public async Task<ICollection<Deck>> GetAllDecks()
-        {
-            return await _dbContext.Decks.ToListAsync();
-        }
-
-        public async Task<string> UpdateDeck(Deck deck)
-        {
-            // Find the existing deck
-            var existingDeck = await _dbContext.Decks.FindAsync(deck.DeckId);
-
-            if (existingDeck != null)
-            {
-                // Update the properties of the existing deck with the properties of the updated deck
-                existingDeck.Title = deck.Title;
-                existingDeck.Description = deck.Description;
-                existingDeck.PublishedAt = deck.PublishedAt;
-                existingDeck.ModeratorId = deck.ModeratorId;
-
-                // Save the changes
+                var newDeck = _mapper.Map<Deck>(deckModel);
+                await _dbContext.Decks.AddAsync(newDeck);
                 await _dbContext.SaveChangesAsync();
-                return "Deck updated successfully";
+
+                return "Deck added successfully";
             }
-            else
+            catch (Exception ex)
             {
-                throw new Exception($"Deck not found.");
+                return $"Error adding deck: {ex.Message}";
+            }
+        }
+        public async Task<string> DeleteDeck(Guid deckId)
+        {
+            try
+            {
+                var deck = await _dbContext.Decks.FindAsync(deckId);
+                if (deck != null)
+                {
+                    _dbContext.Decks.Remove(deck);
+                    await _dbContext.SaveChangesAsync();
+                    return "Deck deleted successfully";
+                }
+                else
+                {
+                    return $"Error: Deck with ID {deckId} not found";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"Error deleting deck: {ex.Message}";
+            }
+        }
+        public async Task<ICollection<DeckModel>> GetAllDecks()
+        {
+            var decks = await _dbContext.Decks.ToListAsync();
+            return _mapper.Map<ICollection<DeckModel>>(decks);
+        }
+
+        // Update an existing deck
+        public async Task<string> UpdateDeck(DeckModel deckModel)
+        {
+            try
+            {
+                var existingDeck = await _dbContext.Decks.FindAsync(deckModel.DeckId);
+
+                if (existingDeck != null)
+                {
+                    _mapper.Map(deckModel, existingDeck);
+                    await _dbContext.SaveChangesAsync();
+                    return "Deck updated successfully";
+                }
+                else
+                {
+                    return $"Error: Deck with ID {deckModel.DeckId} not found";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"Error updating deck: {ex.Message}";
             }
         }
     }

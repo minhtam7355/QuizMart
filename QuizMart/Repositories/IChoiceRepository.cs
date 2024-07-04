@@ -8,6 +8,7 @@ namespace QuizMart.Repositories
 {
     public interface IChoiceRepository
     {
-        
+        Task AddChoiceAsync(ChoiceModel choice);
+        Task<ICollection<ChoiceModel>> GetAllChoices();
     }
 }

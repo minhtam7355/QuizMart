@@ -71,7 +71,9 @@ builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccessRepository, AccessRepository>();
 builder.Services.AddScoped<IAccessService, AccessService>();
-
+builder.Services.AddScoped<IAccessService, AccessService>();
+builder.Services.AddScoped<IDeckService, DeckService>();
+builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();

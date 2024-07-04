@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using QuizMart.Models.DomainModels;
 using QuizMart.Models.ViewModels;
 using QuizMart.Repositories;
+using QuizMart.Services;
 
 namespace QuizMart.Controllers
 {
@@ -10,12 +11,12 @@ namespace QuizMart.Controllers
     [ApiController]
     public class QuizzesController : ControllerBase
     {
-        private readonly IQuizRepository _quizRepository;
+        private readonly IQuizService _quizService;
         private readonly IChoiceRepository _choiceRepository;
 
-        public QuizzesController(IQuizRepository quizRepository, IChoiceRepository choiceRepository)
+        public QuizzesController(IQuizService quizService, IChoiceRepository choiceRepository)
         {
-            _quizRepository = quizRepository;
+            _quizService = quizService;
             _choiceRepository = choiceRepository;
         }
 
@@ -26,8 +27,8 @@ namespace QuizMart.Controllers
         {
             try
             {
-                var quizzes = await _quizRepository.GetAllQuizzes();
-                return Ok(quizzes);
+                var quizzes = await _quizService.GetAllQuizzes();
+               return Ok(quizzes);
             }
             catch (Exception ex)
             {
@@ -39,55 +40,13 @@ namespace QuizMart.Controllers
         #region Create-Quiz
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> CreateQuiz([FromBody] QuizModel quizModel)
+            public async Task<IActionResult> CreateQuiz([FromBody] QuizModel quizModel)
         {
-            if (quizModel == null)
-                return BadRequest("Quiz model cannot be null.");
-
-            if (quizModel.choices == null || quizModel.choices.Count == 0)
-                return BadRequest("Quiz must have at least one choice.");
-
+            
             try
-            {
-                await _quizRepository.AddQuizAsync(quizModel);
+            {   
+                await _quizService.AddQuizAsync(quizModel);
                 return Ok("Quiz created successfully.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-        #endregion
-
-        #region Get-all-Choices
-        [HttpGet]
-        [Route("Get-all-Choices")]
-        public async Task<IActionResult> GetAllChoices()
-        {
-            try
-            {
-                var choices = await _quizRepository.GetAllChoices();
-                return Ok(choices);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-        #endregion
-
-        #region Create-Choice
-        [HttpPost]
-        [Route("Create-choice")]
-        public async Task<IActionResult> CreateChoice([FromBody] ChoiceModel choiceModel)
-        {
-            if (choiceModel == null)
-                return BadRequest("Choice model cannot be null.");
-
-            try
-            {
-                await _quizRepository.AddChoiceAsync(choiceModel);
-                return Ok("Choice created successfully.");
             }
             catch (Exception ex)
             {

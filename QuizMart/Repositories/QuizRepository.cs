@@ -17,68 +17,70 @@ namespace QuizMart.Repositories
         public QuizRepository(QuizMartDbContext dbContext, IMapper mapper)
         {
             _context = dbContext;
-
             _mapper = mapper;
         }
+
         public async Task AddQuizAsync(QuizModel quiz)
         {
-            var quizEntity = new Quiz // Assume QuizEntity is the corresponding domain model or entity
-            {
-                QuizId = quiz.QuizID,
-                DeckId = quiz.DeckID,
-                Type = quiz.Type,
-                QuestionText = quiz.QuestionText,
-                Favorite = quiz.isFavorite
-            };
+            if (quiz == null)
+                throw new ArgumentException("Quiz model cannot be null.");
 
+            if (quiz.Choices == null || !quiz.Choices.Any())
+                throw new ArgumentException("Quiz must have choices.");
+
+            // Validate choices based on quiz type
+            if (quiz.Type == "MultipleChoices")
+            {
+                if (quiz.Choices.Count <= 2)
+                    throw new ArgumentException("Multiple choice quizzes must have more than 2 choices.");
+            }
+            else if (quiz.Type == "True/False")
+            {
+                if (quiz.Choices.Count != 2)
+                    throw new ArgumentException("True/False quizzes must have exactly 2 choices.");
+
+                var choiceContents = quiz.Choices.Select(c => c.Content.ToLower()).ToArray();
+                if (!choiceContents.Contains("true") || !choiceContents.Contains("false"))
+                    throw new ArgumentException("True/False quizzes must have choices labeled 'True' and 'False'.");
+            }
+            else
+            {
+                throw new ArgumentException("Invalid quiz type specified.");
+            }
+            // Validate choices
+            var correctChoicesCount = quiz.Choices.Count(c => c.IsCorrect);
+            if (correctChoicesCount == 0)
+            {
+                throw new ArgumentException("At least one choice must be marked as correct.");
+            }
+            // Map QuizModel to Quiz entity using AutoMapper
+            var quizEntity = _mapper.Map<Quiz>(quiz);
+
+            // Validate and add the quiz entity
             _context.Quizzes.Add(quizEntity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // Save changes for the Quiz entity
 
-            foreach (var choice in quiz.Choices)
+            
+
+            // Map and add choices for the quiz
+            foreach (var choiceModel in quiz.Choices)
             {
-                var choiceEntity = new Choice // Assume ChoiceEntity is the corresponding domain model or entity
-                {
-                    ChoiceId = choice.ChoiceID,
-                    QuizId = quiz.QuizID,
-                    Content = choice.Content,
-                    IsCorrect = choice.IsCorrect
-                };
+                var choiceEntity = _mapper.Map<Choice>(choiceModel);
+                choiceEntity.QuizId = quizEntity.QuizId; // Set the foreign key
+
                 _context.Choices.Add(choiceEntity);
             }
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // Save changes for the Choices
         }
 
-        public async Task AddChoiceAsync(ChoiceModel choice)
+
+
+        public async Task<List<QuizModel>> GetAllQuizzes()
         {
-            try
-            {
-                var choiceEntity = new Choice
-                {
-                    ChoiceId = choice.ChoiceID,
-                    QuizId = choice.QuizID,
-                    Content = choice.Content,
-                    IsCorrect = choice.IsCorrect
-                };
-
-                _context.Choices.Add(choiceEntity);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {                
-                // Rethrow the exception or return a specific response based on your application logic
-                throw new ApplicationException("Error occurred while saving choice to database.", ex);
-            }
+            var quizzes = await _context.Quizzes.Include(q => q.Choices).ToListAsync();
+            return _mapper.Map<List<QuizModel>>(quizzes);
         }
 
-        public async Task<ICollection<QuizModel>> GetAllQuizzes()
-        {
-            return (ICollection<QuizModel>)await _context.Quizzes.ToListAsync();
-        }
-
-        public Task<ICollection<ChoiceModel>> GetAllChoices()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
