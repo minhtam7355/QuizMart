@@ -54,6 +54,42 @@ namespace QuizMart.Controllers
             }
         }
         #endregion
+        [HttpPut("update/{quizId}")]
+        public async Task<IActionResult> UpdateQuiz(Guid quizId, [FromBody] QuizModel quizModel)
+        {
+            try
+            {
+                // Assign the QuizId from the route to the quizModel
+                quizModel.QuizID = quizId;
 
+                await _quizService.UpdateQuizAsync(quizModel);
+                return Ok("Quiz updated successfully.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        [HttpDelete("delete/{quizId}")]
+        public async Task<IActionResult> DeleteQuiz(Guid quizId)
+        {
+            try
+            {
+                await _quizService.DeleteQuizAsync(quizId);
+                return Ok("Quiz deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

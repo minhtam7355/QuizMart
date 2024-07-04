@@ -6,5 +6,8 @@ namespace QuizMart.Services
     {
         public Task AddQuizAsync(QuizModel quiz);
         Task<List<QuizModel>> GetAllQuizzes();
+
+         Task DeleteQuizAsync(Guid quizId);
+         Task UpdateQuizAsync(QuizModel quizModel);
     }
 }

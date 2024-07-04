@@ -19,6 +19,14 @@ namespace QuizMart.Services
         {
             return await _quizRepository.GetAllQuizzes();
         }
+        public async Task DeleteQuizAsync(Guid quizId)
+        {
+            await _quizRepository.DeleteQuizAsync(quizId);
+        }
+        public async Task UpdateQuizAsync(QuizModel quizModel)
+        {
+             await _quizRepository.UpdateQuizAsync(quizModel);
+        }
 
 
 
