@@ -91,5 +91,33 @@ namespace QuizMart.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet("GetAllFavorites")]
+        public async Task<IActionResult> GetAllFavorites()
+        {
+            try
+            {
+                await _quizService.GetAllFavoriteQuizzesAsync();
+                return Ok("Get All Favorite Quizzes Successfully");
+            }
+            catch(Exception ex) { 
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+              
+
+        }
+        [HttpPatch("{quizID}/SetFavorite")]
+        public async Task<IActionResult> SetFavoriteStatus(Guid quizID)
+        {
+            try
+            {
+                await _quizService.SetQuizFavoriteStatusAsync(quizID);
+                return Ok("Set favorite successfully!");
+            }
+            catch (Exception ex) {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+            
+        }
     }
 }

@@ -9,5 +9,8 @@ namespace QuizMart.Services
 
          Task DeleteQuizAsync(Guid quizId);
          Task UpdateQuizAsync(QuizModel quizModel);
+
+        Task<List<QuizModel>> GetAllFavoriteQuizzesAsync();
+        Task SetQuizFavoriteStatusAsync(Guid quizId);
     }
 }
