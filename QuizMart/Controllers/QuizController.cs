@@ -112,7 +112,7 @@ namespace QuizMart.Controllers
             try
             {
                 await _quizService.SetQuizFavoriteStatusAsync(quizID);
-                return Ok("Set favorite successfully!");
+                return Ok("Set successfully!");
             }
             catch (Exception ex) {
                 return StatusCode(500, $"Internal server error: {ex.Message}");

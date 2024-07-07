@@ -38,8 +38,13 @@ namespace QuizMart.Services
             {
                 throw new KeyNotFoundException("Quiz not found.");
             }
-
-            quiz.isFavorite = true;
+            if(quiz.isFavorite == false) {
+                quiz.isFavorite = true;
+            }else
+            {
+                quiz.isFavorite = false;
+            }
+            
             await _quizRepository.UpdateQuizAsync(quiz);
         }
         public async Task<QuizModel> GetQuizByIdAsync(Guid quizId)
