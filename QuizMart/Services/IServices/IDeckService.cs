@@ -5,7 +5,7 @@ namespace QuizMart.Services.IServices
 {
     public interface IDeckService
     {
-        Task<string> AddDeckAsync(DeckModel deck);
+        Task<bool> AddDeckAsync(AddDeckVM deck, Guid hostId);
         Task<string> DeleteDeckAsync(Guid deckId);
         Task<ICollection<DeckModel>> GetAllDecksAsync();
         Task<string> UpdateDeckAsync(DeckModel deck);

@@ -21,7 +21,7 @@ namespace QuizMart.Controllers
         }
 
         #region Get All Decks
-        [HttpGet("Get-all-Decks")]
+        [HttpGet]
         public async Task<IActionResult> GetAllDecks()
         {
             try
@@ -35,17 +35,31 @@ namespace QuizMart.Controllers
             }
         }
         #endregion
-
         #region Add Deck
-        [HttpPost("Add-Deck")]
-        public async Task<IActionResult> AddDeck([FromBody] DeckModel deckModel)
+        [HttpPost]
+        public async Task<IActionResult> AddDeck([FromBody] AddDeckVM deck)
         {
             try
             {
+                var hostIdString = User.FindFirstValue(ClaimTypes.Sid); // Ensure this matches your claim type
 
-                await _deckService.AddDeckAsync(deckModel);
-                return Ok("Deck created successfully.");
+                if (Guid.TryParse(hostIdString, out Guid hostId))
+                {
+                    var success = await _deckService.AddDeckAsync(deck, hostId);
 
+                    if (success)
+                    {
+                        return Ok("Deck created successfully.");
+                    }
+                    else
+                    {
+                        return BadRequest("Failed to create Deck.");
+                    }
+                }
+                else
+                {
+                    return BadRequest("Invalid host ID format.");
+                }
             }
             catch (Exception ex)
             {

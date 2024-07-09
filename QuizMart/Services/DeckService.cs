@@ -10,24 +10,50 @@ namespace QuizMart.Services
     {
         private readonly IDeckRepository _deckRepository;
         private readonly IMapper _mapper;
+        private readonly IRequestService _requestService;
 
-        public DeckService(IDeckRepository deckRepository, IMapper mapper)
+        public DeckService(IDeckRepository deckRepository, IMapper mapper, IRequestService requestService)
         {
             _deckRepository = deckRepository;
             _mapper = mapper;
+            _requestService = requestService;
         }
 
-        public async Task<string> AddDeckAsync(DeckModel deck)
+        public async Task<bool> AddDeckAsync(AddDeckVM deck, Guid hostId)
         {
             try
             {
-                var deckEntity = _mapper.Map<Deck>(deck);
-                var result = await _deckRepository.AddDeck(deckEntity);
-                return result;
+                // Map AddDeckVM to Deck domain model
+                var deckDomain = _mapper.Map<Deck>(deck);
+
+                // Assign HostId to the domain model
+                deckDomain.HostId = hostId;
+
+                // Assign DeckId to each Quiz in the domain model
+                foreach (var quiz in deckDomain.Quizzes)
+                {
+                    quiz.DeckId = deckDomain.DeckId; // Assign DeckId to Quiz
+                    foreach (var choice in quiz.Choices)
+                    {
+                        choice.QuizId = quiz.QuizId; // Assign QuizId to each Choice
+                    }
+                }
+
+                // Call AddDeckRequestAsync from RequestService
+                var requestAdded = await _requestService.AddDeckRequestAsync(deckDomain.DeckId, hostId);
+
+                if (!requestAdded)
+                {
+                    return false; // Optionally handle failure to add request
+                }
+
+                // Add deckDomain to the repository (or database)
+                return await _deckRepository.AddDeckAsync(deckDomain);
+                
             }
             catch (Exception ex)
             {
-                return $"Error adding deck: {ex.Message}";
+                return false;
             }
         }
 

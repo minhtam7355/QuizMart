@@ -15,17 +15,17 @@ namespace QuizMart.Repositories
             _context = context;
         }
 
-        public async Task<string> AddDeck(Deck deck)
+        public async Task<bool> AddDeckAsync(Deck deck)
         {
             try
             {
-                _context.Decks.Add(deck);
+                await _context.Decks.AddAsync(deck);
                 await _context.SaveChangesAsync();
-                return "Deck added successfully.";
+                return true;
             }
             catch (Exception ex)
             {
-                return $"Error adding deck: {ex.Message}";
+                return false;
             }
         }        
 

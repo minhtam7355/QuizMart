@@ -5,12 +5,19 @@ namespace QuizMart.Models.ViewModels
     public class DeckModel
     {
         public Guid DeckId { get; set; }
-        public Guid UserId { get; set; }
-        public string DeckTitle { get; set; }
-        public string DeckDescription { get; set;}
-        public DateTime Published { get; set; }
-        public string Status { get; set; }
-        public Guid ModId { get; set; }
+
+        public Guid HostId { get; set; }
+
+        public string? Title { get; set; }
+
+        public string? Description { get; set; }
+
+        public DateTime? PublishedAt { get; set; }
+
+        public string? Status { get; set; }
+
+        public Guid? ModeratorId { get; set; }
+
         public List<QuizModel> Quizzes { get; set; }
     }
 }
