@@ -1,41 +1,89 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using QuizMart.Services.IServices;
-using System.Security.Claims;
+using QuizMart.Services;
+using System;
+using System.Threading.Tasks;
 
 namespace QuizMart.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class RequestController : Controller
+    public class RequestController : ControllerBase
     {
         private readonly IRequestService _requestService;
+
         public RequestController(IRequestService requestService)
         {
             _requestService = requestService;
         }
 
-        [HttpGet("Get-all-Requests")]
+        #region Get All Requests
+        [HttpGet("Get-All-Requests")]
         public async Task<IActionResult> GetAllRequests()
-        {
-            var requests = await _requestService.GetAllRequests();
-            return Ok(requests);
-        }
-
-        [HttpPost("Approve-Request")]
-        public async Task<IActionResult> ApproveRequest([FromBody] Guid requestId)
         {
             try
             {
-                var moderatorId = User.FindFirstValue(ClaimTypes.Sid);
-                await _requestService.ApproveRequest(requestId, Guid.Parse(moderatorId));
-                return Ok("Request approved successfully.");
+                var requests = await _requestService.GetAllRequestsAsync();
+                return Ok(requests);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"Error: {ex.Message}");
             }
         }
+        #endregion
+
+        #region Get Request by ID
+        [HttpGet("Get-Request-By-Id/{requestId}")]
+        public async Task<IActionResult> GetRequestById(Guid requestId)
+        {
+            try
+            {
+                var request = await _requestService.GetRequestByIdAsync(requestId);
+                if (request == null)
+                {
+                    return NotFound("Request not found.");
+                }
+                return Ok(request);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region Get All Pending Add Deck Requests
+        [HttpGet("Get-All-Pending-Add-Deck-Requests")]
+        public async Task<IActionResult> GetAllPendingAddDeckRequests()
+        {
+            try
+            {
+                var requests = await _requestService.GetAllPendingAddDeckRequestsAsync();
+                return Ok(requests);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region Get All Pending Edit Deck Requests
+        [HttpGet("Get-All-Pending-Edit-Deck-Requests")]
+        public async Task<IActionResult> GetAllPendingEditDeckRequests()
+        {
+            try
+            {
+                var requests = await _requestService.GetAllPendingEditDeckRequestsAsync();
+                return Ok(requests);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+        #endregion
     }
 }

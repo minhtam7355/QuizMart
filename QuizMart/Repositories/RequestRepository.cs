@@ -1,5 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using QuizMart.Models.DomainModels;
 using QuizMart.Context;
 using QuizMart.Models.DomainModels;
 
@@ -7,66 +11,56 @@ namespace QuizMart.Repositories
 {
     public class RequestRepository : IRequestRepository
     {
-        private readonly QuizMartDbContext _context;
-        private readonly IMapper _mapper;
-        public RequestRepository(QuizMartDbContext dbContext, IMapper mapper)
+        private readonly QuizMartDbContext _dbContext;
+
+        public RequestRepository(QuizMartDbContext _dbContext)
         {
-            _context = dbContext;
-            _mapper = mapper;
+            this._dbContext = _dbContext;
         }
 
-        public async Task CreateRequestForDeck(Guid userId, Guid deckId)
+        public async Task<bool> AddRequestAsync(Request request)
         {
-            // Create a new request
-            var request = new Request
-            {
-                RequestId = Guid.NewGuid(),
-                RequestType = "AddDeck", // Customize as needed
-                RequestStatus = null, // Pending initially
-                RequestDate = DateTime.UtcNow,
-                DeckId = deckId,
-                HostId = userId,
-                ModeratorId = null // No moderator assigned yet
-            };
+            await _dbContext.Requests.AddAsync(request);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
 
-            // Mark the deck as pending
-            var deck = await _context.Decks.FindAsync(deckId);
-            if (deck != null)
+        public async Task<List<Request>> GetAllRequestsAsync()
+        {
+            return await _dbContext.Requests.ToListAsync();
+        }
+        }
+
+        public async Task<Request?> GetRequestByIdAsync(Guid requestId)
+        {
+            return await _dbContext.Requests.FindAsync(requestId);
+        }
+
+        public async Task<List<Request>> GetAllPendingAddDeckRequestsAsync()
+        {
+            return await _dbContext.Requests
+                .Where(r => r.RequestType == "AddDeckRequest" && (r.RequestStatus == null || r.RequestStatus == false))
+                .ToListAsync();
+        }
+
+        public async Task<List<Request>> GetAllPendingEditDeckRequestsAsync()
+        {
+            return await _dbContext.Requests
+                .Where(r => r.RequestType == "EditDeckRequest" && (r.RequestStatus == null || r.RequestStatus == false))
+                .ToListAsync();
+        }
+        public async Task<bool> UpdateRequestStatusAsync(Guid requestId, bool status, string requestType)
+        {
+            var request = await _dbContext.Requests.FirstOrDefaultAsync(r => r.RequestId == requestId && r.RequestType == requestType);
+            if (request == null)
             {
-                deck.Status = "Pending";
-                _context.Requests.Add(request);
-                await _context.SaveChangesAsync();
+                return false;
             }
-        }
 
-        public async Task ApproveRequest(Guid requestId, Guid moderatorId)
-        {
-            // Find the request
-            var request = await _context.Requests.FindAsync(requestId);
-            if (request != null)
-            {
-                // Update the request status to approved
-                request.RequestStatus = true;
-                request.ModeratorId = moderatorId;
-
-                // Update the deck status to approved
-                var deck = await _context.Decks.FindAsync(request.DeckId);
-                if (deck != null)
-                {
-                    deck.Status = "Approved";
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    deck.Status = "Rejected";
-                    await _context.SaveChangesAsync();
-                }
-            }
-        }
-
-        public async Task<ICollection<Request>> GetAllRequests()
-        {
-            return await _context.Requests.ToListAsync();
+            request.RequestStatus = status;
+            _dbContext.Requests.Update(request);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }
