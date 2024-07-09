@@ -1,11 +1,21 @@
-﻿using QuizMart.Models.DomainModels;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using QuizMart.Models.DomainModels;
 
-namespace QuizMart.Services.IServices
+namespace QuizMart.Services
 {
     public interface IRequestService
     {
-        Task CreateRequestForDeck(Guid deckId, Guid hostId);
-        Task ApproveRequest(Guid requestId, Guid moderatorId);
-        Task<ICollection<Request>> GetAllRequests();
+        Task<bool> AddDeckRequestAsync(Guid deckId, Guid hostId);
+        Task<bool> EditDeckRequestAsync(Guid deckId, Guid hostId);
+        Task<List<Request>> GetAllRequestsAsync();
+        Task<Request?> GetRequestByIdAsync(Guid requestId);
+        Task<List<Request>> GetAllPendingAddDeckRequestsAsync();
+        Task<List<Request>> GetAllPendingEditDeckRequestsAsync();
+        Task<bool> ApproveAddDeckRequestAsync(Guid requestId);
+        Task<bool> DenyAddDeckRequestAsync(Guid requestId);
+        Task<bool> ApproveEditDeckRequestAsync(Guid requestId);
+        Task<bool> DenyEditDeckRequestAsync(Guid requestId);
     }
 }

@@ -5,10 +5,10 @@ namespace QuizMart.Repositories
 {
     public interface IDeckRepository
     {
-        public Task<ICollection<DeckModel>> GetAllDecks();
-        public Task<string> AddDeck(DeckModel deck);
-        public Task<string> UpdateDeck(DeckModel deckModel);
+        public Task<ICollection<Deck>> GetAllDecks();
+        public Task<string> AddDeck(Deck deck);
+        public Task<string> UpdateDeck(Deck deckModel);
         public Task<string> DeleteDeck(Guid deckId);
-        public Task<DeckModel> SearchDeckByKeyword(string keyword);
+        public Task<Deck> SearchDeckByKeyword(string keyword);
     }
 }

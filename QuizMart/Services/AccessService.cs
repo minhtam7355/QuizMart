@@ -1,5 +1,6 @@
 ﻿using QuizMart.Models.ViewModels;
 using QuizMart.Repositories;
+using QuizMart.Services.IServices;
 using System.Threading.Tasks;
 
 namespace QuizMart.Services

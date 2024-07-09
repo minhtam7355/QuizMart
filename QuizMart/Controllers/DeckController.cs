@@ -13,13 +13,11 @@ namespace QuizMart.Controllers
     [Authorize]
     public class DeckController : ControllerBase
     {
-        private readonly IDeckService _deckService;
-        private readonly IRequestService _requestService;
+        private readonly IDeckService _deckService;        
 
-        public DeckController(IDeckService deckService, IRequestService requestService)
+        public DeckController(IDeckService deckService)
         {
-            _deckService = deckService;
-            _requestService = requestService;
+            _deckService = deckService;           
         }
 
         #region Get All Decks
