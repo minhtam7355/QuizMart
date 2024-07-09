@@ -70,15 +70,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IDeckRepository, DeckRepository>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
-<<<<<<< HEAD
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRequestRepository, RequestRepository>();
-builder.Services.AddScoped<IAccessRepository, AccessRepository>();
-builder.Services.AddScoped<IAccessService, AccessService>();
-=======
+
 builder.Services.AddScoped<IChoiceRepository, ChoiceRepository>();
 
->>>>>>> master
 builder.Services.AddScoped<IAccessService, AccessService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IDeckService, DeckService>();
