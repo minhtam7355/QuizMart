@@ -30,14 +30,14 @@ namespace QuizMart.Helpers
 
 
             CreateMap<DeckModel, Deck>()
-    .ForMember(dest => dest.DeckId, opt => opt.MapFrom(_ => Guid.NewGuid()))
-    .ForMember(dest => dest.HostId, opt => opt.MapFrom(src => src.UserId))
-    .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.DeckTitle))
-    .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.DeckDescription))
-    .ForMember(dest => dest.PublishedAt, opt => opt.MapFrom(src => src.Published))
-    .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
-    .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
-    .ForMember(dest => dest.ModeratorId, opt => opt.MapFrom(src => src.ModId));
+                .ForMember(dest => dest.DeckId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.HostId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.DeckTitle))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.DeckDescription))
+                .ForMember(dest => dest.PublishedAt, opt => opt.MapFrom(src => src.Published))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.ModeratorId, opt => opt.MapFrom(src => src.ModId));
 
             CreateMap<Deck, DeckModel>()
                 .ForMember(dest => dest.DeckId, opt => opt.MapFrom(src => src.DeckId))
@@ -50,12 +50,12 @@ namespace QuizMart.Helpers
                 .ForMember(dest => dest.Quizzes, opt => opt.MapFrom(src => src.Quizzes));
 
             CreateMap<QuizModel, Quiz>()
-            .ForMember(dest => dest.QuizId, opt => opt.MapFrom(_ => Guid.NewGuid()))
-            .ForMember(dest => dest.DeckId, opt => opt.MapFrom(src => src.DeckID))
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
-            .ForMember(dest => dest.QuestionText, opt => opt.MapFrom(src => src.QuestionText))
-            .ForMember(dest => dest.Favorite, opt => opt.MapFrom(src => src.isFavorite))
-            .ForMember(dest => dest.Choices, opt => opt.MapFrom(src => src.Choices));
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.DeckId, opt => opt.MapFrom(src => src.DeckID))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
+                .ForMember(dest => dest.QuestionText, opt => opt.MapFrom(src => src.QuestionText))
+                .ForMember(dest => dest.Favorite, opt => opt.MapFrom(src => src.isFavorite))
+                .ForMember(dest => dest.Choices, opt => opt.MapFrom(src => src.Choices));
 
             CreateMap<ChoiceModel, Choice>()
                 .ForMember(dest => dest.ChoiceId, opt => opt.MapFrom(_ => Guid.NewGuid()))

@@ -70,10 +70,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IDeckRepository, DeckRepository>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
-
 builder.Services.AddScoped<IChoiceRepository, ChoiceRepository>();
 
 builder.Services.AddScoped<IAccessService, AccessService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IDeckService, DeckService>();
 builder.Services.AddScoped<IQuizService, QuizService>();

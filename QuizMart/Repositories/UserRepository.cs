@@ -10,73 +10,82 @@ namespace QuizMart.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly QuizMartDbContext _dbContext;
-        private readonly IMapper _mapper;
-        public UserRepository(QuizMartDbContext dbContext, IMapper mapper)
+
+        public UserRepository(QuizMartDbContext dbContext)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
         }
 
-        public Task<string> AddUser(UserInfo user)
+        public async Task<string> AddUser(User user)
         {
-            User newUser = _mapper.Map<User>(user);
-            _dbContext.Users.Add(newUser);
-            _dbContext.SaveChanges();
-            return Task.FromResult("User added successfully");
-        }
-
-        public Task<string> DeleteUser(Guid userId)
-        {
-            UserInfo user = GetUserById(userId).Result;
-            if (user != null)
+            try
             {
-                _dbContext.Users.Remove(_mapper.Map<User>(user));
-                _dbContext.SaveChanges();
-                return Task.FromResult("User delete successfully");
+                _dbContext.Users.Add(user);
+                await _dbContext.SaveChangesAsync();
+                return "User added successfully";
             }
-            else
+            catch (Exception ex)
             {
-                return Task.FromResult("User not found");
+                return $"Error adding user: {ex.Message}";
             }
         }
 
-        public async Task<ICollection<UserInfo>> GetAllUsers()
+        public async Task<string> DeleteUser(Guid userId)
         {
-            return await _dbContext.Users.Select(u => _mapper.Map<UserInfo>(u)).ToListAsync();
-        }
+            var user = await _dbContext.Users.FindAsync(userId);
 
-        public async Task<string> UpdateUser(UserInfo user)
-        {
-            UserInfo newUser = await GetUserById(user.UserId);
-            if (newUser != null)
-            {
-                newUser.Username = user.Username;
-                newUser.Email = user.Email;
-                newUser.FullName = user.FullName;
-                newUser.PhoneNumber = user.PhoneNumber;
-                newUser.HomeAddress = user.HomeAddress;
-                newUser.DateOfBirth = user.DateOfBirth;
-
-                _dbContext.SaveChanges();
-                return "User updated successfully";
-            }
-            else
+            if (user == null)
             {
                 return "User not found";
             }
+            try
+            {
+                _dbContext.Users.Remove(user);
+                await _dbContext.SaveChangesAsync();
+                return "User deleted successfully";
+            }
+            catch(Exception ex)
+            {
+                return $"Error deleting user: {ex.Message}";
+            }
+        }
+
+        public async Task<ICollection<User>> GetAllUsers()
+        {
+            return await _dbContext.Users.ToListAsync();
+        }
+
+        public async Task<string> UpdateUser(User user)
+        {
+            var existingUser = await _dbContext.Users.FindAsync(user.UserId);
+            if (existingUser == null)
+            {
+                return "User not found";
+            }
+            try
+            {
+                _dbContext.Entry(existingUser).CurrentValues.SetValues(user);
+                await _dbContext.SaveChangesAsync();
+                return "User updated successfully";
+            }
+            catch (Exception ex)
+            {
+                return $"Error updating user: {ex.Message}";
+            }       
         }
 
         public async Task<string> ChangePassword(Guid userId, string oldPassword, string newPassword)
         {
-            UserInfo userInfo = await GetUserById(userId);
-            if (userInfo != null)
+            User user = await _dbContext.Users.FindAsync(userId);
+
+            if (user != null)
             {
                 // This should be a hashed comparison in a real application
-                if (BCrypt.Net.BCrypt.Verify(oldPassword, userInfo.PasswordHash))
+                if (BC.EnhancedVerify(oldPassword, user.PasswordHash))
                 {
-                    UserInfo user = GetUserById(userId).Result;
-                    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                    user.PasswordHash = BC.HashPassword(newPassword);
                     _dbContext.SaveChanges();
+
                     return "Password changed successfully";
                 }
                 else
@@ -90,9 +99,14 @@ namespace QuizMart.Repositories
             }
         }
 
-        public async Task<UserInfo> GetUserById(Guid userId)
+        public async Task<User> GetUserById(Guid userId)
         {
-            return _mapper.Map<UserInfo>(_dbContext.Users.FirstOrDefault(u => u.UserId == userId));
+            User user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return null;
+            }
+            return user;
         }
     }
 }

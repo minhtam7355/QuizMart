@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuizMart.Models.DomainModels;
@@ -10,6 +11,7 @@ namespace QuizMart.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class QuizzesController : ControllerBase
     {
         private readonly IQuizService _quizService;
