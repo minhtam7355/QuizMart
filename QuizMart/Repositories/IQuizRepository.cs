@@ -8,16 +8,21 @@ namespace QuizMart.Repositories
 {
     public interface IQuizRepository
     {
-        Task AddQuizAsync(QuizModel quiz);
+        Task AddQuizAsync(Quiz quiz);
 
-        Task<List<QuizModel>> GetAllQuizzes();
+        Task<List<Quiz>> GetAllQuizzes();
 
-        Task UpdateQuizAsync(QuizModel quizModel);
+        Task UpdateQuizAsync(Quiz quizModel);
 
         Task DeleteQuizAsync(Guid quizId);
 
-        Task<List<QuizModel>> GetAllFavoriteQuizzesAsync();
+        Task<List<Quiz>> GetAllFavoriteQuizzesAsync();
 
-        Task<QuizModel> GetQuizByIdAsync(Guid quizId);
+        Task<Quiz> GetQuizByIdAsync(Guid quizId);
+        Task ExecuteInTransactionAsync(Func<Task> action);
+        Task RemoveChoicesAsync(List<Choice> choices);
+        Task AddQuizAndChoicesAsync(Quiz quizEntity, List<Choice> choices);
+
+        Task<List<Choice>> GetCorrectChoicesByQuizIdAsync(Guid quizId);
     }
 }

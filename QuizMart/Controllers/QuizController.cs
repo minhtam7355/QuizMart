@@ -27,7 +27,7 @@ namespace QuizMart.Controllers
         {
             try
             {
-                var quizzes = await _quizService.GetAllQuizzes();
+                var quizzes = await _quizService.GetAllQuizzesAsync();
                return Ok(quizzes);
             }
             catch (Exception ex)
@@ -97,8 +97,8 @@ namespace QuizMart.Controllers
         {
             try
             {
-                await _quizService.GetAllFavoriteQuizzesAsync();
-                return Ok("Get All Favorite Quizzes Successfully");
+                var quizzes= await _quizService.GetAllFavoriteQuizzesAsync();
+                return Ok(quizzes);
             }
             catch(Exception ex) { 
                 return StatusCode(500, $"Internal server error: {ex.Message}");
@@ -118,6 +118,12 @@ namespace QuizMart.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
             
+        }
+        [HttpPost("{quizId}/ChooseChoices")]
+        public async Task<IActionResult> ChooseChoices(Guid quizId, [FromBody] List<Guid> choiceIds)
+        {
+            var result = await _quizService.CheckChoicesAsync(quizId, choiceIds);
+            return Ok(result);
         }
     }
 }

@@ -11,7 +11,7 @@ public partial class Choice
 
     public string? Content { get; set; }
 
-    public bool? IsCorrect { get; set; }
+    public bool IsCorrect { get; set; }
 
     public virtual Quiz Quiz { get; set; } = null!;
 }
