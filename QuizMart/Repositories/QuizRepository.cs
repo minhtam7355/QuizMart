@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using QuizMart.Context;
 using QuizMart.Models.DomainModels;
 using QuizMart.Models.ViewModels;
@@ -12,133 +13,87 @@ namespace QuizMart.Repositories
     public class QuizRepository : IQuizRepository
     {
         private readonly QuizMartDbContext _context;
-        private readonly IMapper _mapper;
 
-        public QuizRepository(QuizMartDbContext dbContext, IMapper mapper)
+        public QuizRepository(QuizMartDbContext dbContext)
         {
             _context = dbContext;
-            _mapper = mapper;
         }
 
-        public async Task AddQuizAsync(QuizModel quiz)
+        public async Task AddQuizAsync(Quiz quizEntity)
         {
-            if (quiz == null)
-                throw new ArgumentException("Quiz model cannot be null.");
-            ValidateQuiz(quiz);
-            // Map QuizModel to Quiz entity using AutoMapper
-            var quizEntity = _mapper.Map<Quiz>(quiz);
+            if (quizEntity == null)
+                throw new ArgumentException("Quiz entity cannot be null.");
 
-            // Validate and add the quiz entity
             _context.Quizzes.Add(quizEntity);
-            await _context.SaveChangesAsync(); // Save changes for the Quiz entity
-
-            
-
-            // Map and add choices for the quiz
-            foreach (var choiceModel in quiz.Choices)
-            {
-                var choiceEntity = _mapper.Map<Choice>(choiceModel);
-                choiceEntity.QuizId = quizEntity.QuizId; // Set the foreign key
-
-                _context.Choices.Add(choiceEntity);
-            }
-
-            await _context.SaveChangesAsync(); // Save changes for the Choices
+            await _context.SaveChangesAsync();
         }
 
-
-
-        public async Task<List<QuizModel>> GetAllQuizzes()
+        public async Task<Quiz> GetQuizByIdAsync(Guid quizId)
         {
-            var quizzes = await _context.Quizzes.Include(q => q.Choices).ToListAsync();
-            return _mapper.Map<List<QuizModel>>(quizzes);
+            return await _context.Quizzes.Include(q => q.Choices).FirstOrDefaultAsync(q => q.QuizId == quizId);
         }
-        public async Task UpdateQuizAsync(QuizModel quizModel)
+        public async Task<List<Quiz>> GetAllFavoriteQuizzesAsync()
         {
-            // Fetch the existing quiz from the database including choices
-            var existingQuiz = await _context.Quizzes
-                                             .Include(q => q.Choices)
-                                             .FirstOrDefaultAsync(q => q.QuizId == quizModel.QuizID);
+            return await _context.Quizzes.Include(q => q.Choices).Where(q => q.Favorite).ToListAsync();
+        }
+        public async Task UpdateQuizAsync(Quiz quizEntity)
+        {
+            if (quizEntity == null)
+                throw new ArgumentException("Quiz entity cannot be null.");
 
-            if (existingQuiz == null)
+            _context.Quizzes.Update(quizEntity);
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteQuizAsync(Guid quizId)
+        {
+            var quizEntity = await _context.Quizzes.Include(q => q.Choices).FirstOrDefaultAsync(q => q.QuizId == quizId);
+            if (quizEntity == null)
                 throw new KeyNotFoundException("Quiz not found.");
 
-            // Validate the incoming model
-            ValidateQuiz(quizModel);
+            _context.Quizzes.Remove(quizEntity);
+            await _context.SaveChangesAsync();
+        }
 
-            // Begin transaction to ensure atomicity
+        public async Task<List<Quiz>> GetAllQuizzes()
+        {
+            return await _context.Quizzes.Include(q => q.Choices).ToListAsync();
+        }
+
+        public async Task RemoveChoicesAsync(List<Choice> choices)
+        {
+            _context.Choices.RemoveRange(choices);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddQuizAndChoicesAsync(Quiz quizEntity, List<Choice> choices)
+        {
+            _context.Quizzes.Add(quizEntity);
+            _context.Choices.AddRange(choices);
+            await _context.SaveChangesAsync();
+        }
+        public async Task ExecuteInTransactionAsync(Func<Task> action)
+        {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
-                // Remove existing quiz and choices
-                _context.Choices.RemoveRange(existingQuiz.Choices);
-                _context.Quizzes.Remove(existingQuiz);
-                await _context.SaveChangesAsync();
-
-                // Create new quiz entity with the same QuizId
-                var newQuizEntity = _mapper.Map<Quiz>(quizModel);
-                newQuizEntity.QuizId = existingQuiz.QuizId; // Reuse the existing QuizId
-
-                // Add new choices
-                foreach (var choiceModel in quizModel.Choices)
-                {
-                    var newChoiceEntity = _mapper.Map<Choice>(choiceModel);
-                    newChoiceEntity.QuizId = newQuizEntity.QuizId; // Set the foreign key
-                    newQuizEntity.Choices.Add(newChoiceEntity);   // Add to the navigation property
-                }
-
-                // Add new quiz and choices
-                _context.Quizzes.Add(newQuizEntity);
-                await _context.SaveChangesAsync();
-
-                // Commit transaction
+                await action();
                 await transaction.CommitAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Rollback transaction if there's an error
                 await transaction.RollbackAsync();
-                throw new ApplicationException("Error updating quiz.", ex);
+                throw;
             }
         }
-        public async Task<QuizModel> GetQuizByIdAsync(Guid quizId)
-        {
-             var quiz=await _context.Quizzes
-                                 .Include(q => q.Choices)
-                                 .FirstOrDefaultAsync(q => q.QuizId == quizId);
 
-            return _mapper.Map<QuizModel>(quiz);
-        }
-        public async Task<List<QuizModel>> GetAllFavoriteQuizzesAsync()
+        public async Task<List<Choice>> GetCorrectChoicesByQuizIdAsync(Guid quizId)
         {
-            var quizzes = await  _context.Quizzes
-                                 .Where(q => q.Favorite == true)
+            return await _context.Choices
+                                 .Where(c => c.QuizId == quizId && c.IsCorrect)
                                  .ToListAsync();
-
-            return _mapper.Map<List<QuizModel>>(quizzes);
         }
 
-        public async Task DeleteQuizAsync(Guid quizId)
-        {
-            var quizEntity = await _context.Quizzes
-                                           .Include(q => q.Choices)
-                                           .FirstOrDefaultAsync(q => q.QuizId == quizId);
-
-            if (quizEntity == null)
-                throw new KeyNotFoundException("Quiz not found.");
-
-            // Remove all associated choices
-            foreach (var choice in quizEntity.Choices.ToList())
-            {
-                _context.Choices.Remove(choice);
-            }
-
-            // Remove the quiz itself
-            _context.Quizzes.Remove(quizEntity);
-
-            await _context.SaveChangesAsync();
-        }
         private void ValidateQuiz(QuizModel quizModel)
         {
            

@@ -13,9 +13,9 @@ public partial class Quiz
 
     public string? QuestionText { get; set; }
 
-    public bool? Favorite { get; set; }
+    public bool Favorite { get; set; }
 
-    public virtual ICollection<Choice> Choices { get; set; } = new List<Choice>();
+    public virtual List<Choice> Choices { get; set; } = new List<Choice>();
 
     public virtual Deck Deck { get; set; } = null!;
 }
