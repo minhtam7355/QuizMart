@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using QuizMart.Models.DomainModels;
 using QuizMart.Repositories;
+using QuizMart.Services.IServices;
 
 namespace QuizMart.Services
 {

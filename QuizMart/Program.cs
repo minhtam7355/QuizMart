@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using QuizMart.Context;
 using QuizMart.Repositories;
 using QuizMart.Services;
+using QuizMart.Services.IServices;
 using QuizMart.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
@@ -69,6 +70,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IDeckRepository, DeckRepository>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
+
 builder.Services.AddScoped<IChoiceRepository, ChoiceRepository>();
 
 builder.Services.AddScoped<IAccessService, AccessService>();

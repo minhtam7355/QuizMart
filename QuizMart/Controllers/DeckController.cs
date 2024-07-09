@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using QuizMart.Models.DomainModels;
 using QuizMart.Models.ViewModels;
 using QuizMart.Services;
+using QuizMart.Services.IServices;
 using System.Security.Claims;
 
 namespace QuizMart.Controllers
@@ -11,11 +13,11 @@ namespace QuizMart.Controllers
     [Authorize]
     public class DeckController : ControllerBase
     {
-        private readonly IDeckService _deckService;
+        private readonly IDeckService _deckService;        
 
         public DeckController(IDeckService deckService)
         {
-            _deckService = deckService;
+            _deckService = deckService;           
         }
 
         #region Get All Decks
@@ -91,5 +93,15 @@ namespace QuizMart.Controllers
             }
         }
         #endregion
+
+        #region Search Deck By Keyword
+        [HttpGet("Search-Deck")]
+        public async Task<IActionResult> SearchDeckByKeyword([FromQuery] string keyword)
+        {
+            var deck = await _deckService.SearchDeckByKeyword(keyword);
+            return Ok(deck);
+        }
+        #endregion
+
     }
 }

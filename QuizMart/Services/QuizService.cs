@@ -1,6 +1,7 @@
 ﻿using QuizMart.Models.DomainModels;
 using QuizMart.Models.ViewModels;
 using QuizMart.Repositories;
+using QuizMart.Services.IServices;
 
 namespace QuizMart.Services
 {
@@ -52,8 +53,5 @@ namespace QuizMart.Services
             var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
             return quiz;
         }
-
-
-    }
-    
+    }    
 }

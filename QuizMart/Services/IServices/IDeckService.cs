@@ -1,6 +1,7 @@
-﻿using QuizMart.Models.ViewModels;
+﻿using QuizMart.Models.DomainModels;
+using QuizMart.Models.ViewModels;
 
-namespace QuizMart.Services
+namespace QuizMart.Services.IServices
 {
     public interface IDeckService
     {
@@ -8,5 +9,6 @@ namespace QuizMart.Services
         Task<string> DeleteDeckAsync(Guid deckId);
         Task<ICollection<DeckModel>> GetAllDecksAsync();
         Task<string> UpdateDeckAsync(DeckModel deck);
+        public Task<DeckModel> SearchDeckByKeyword(string keyword);
     }
 }
