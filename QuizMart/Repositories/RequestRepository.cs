@@ -63,5 +63,10 @@ namespace QuizMart.Repositories
                 }
             }
         }
+
+        public async Task<ICollection<Request>> GetAllRequests()
+        {
+            return await _context.Requests.ToListAsync();
+        }
     }
 }

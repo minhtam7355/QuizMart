@@ -1,9 +1,9 @@
 ﻿using QuizMart.Models.DomainModels;
 using QuizMart.Models.ViewModels;
 
-namespace QuizMart.Repositories
+namespace QuizMart.Services.IServices
 {
-    public interface IDeckRepository
+    public interface IDeckService
     {
         public Task<ICollection<Deck>> GetAllDecks();
         public Task<string> AddDeck(DeckModel deck);

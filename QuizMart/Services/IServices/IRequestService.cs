@@ -1,8 +1,8 @@
 ﻿using QuizMart.Models.DomainModels;
 
-namespace QuizMart.Repositories
+namespace QuizMart.Services.IServices
 {
-    public interface IRequestRepository
+    public interface IRequestService
     {
         Task CreateRequestForDeck(Guid deckId, Guid hostId);
         Task ApproveRequest(Guid requestId, Guid moderatorId);

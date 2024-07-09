@@ -16,7 +16,7 @@ namespace QuizMart.Repositories
             _mapper = mapper;
         }
 
-        public Task<string> AddDeck(DeckViewModel deck)
+        public Task<string> AddDeck(DeckModel deck)
         {
             try 
             {
@@ -46,12 +46,12 @@ namespace QuizMart.Repositories
             return await _dbContext.Decks.ToListAsync();
         }
 
-        public async Task<DeckViewModel> SearchDeckByKeyword(string keyword)
+        public async Task<DeckModel> SearchDeckByKeyword(string keyword)
         {
-            return await _dbContext.Decks.Where(d => d.Title.Contains(keyword)).Select(d => _mapper.Map<DeckViewModel>(d)).FirstOrDefaultAsync();
+            return await _dbContext.Decks.Where(d => d.Title.Contains(keyword)).Select(d => _mapper.Map<DeckModel>(d)).FirstOrDefaultAsync();
         }
 
-        public async Task<string> UpdateDeck(Deck deck)
+        public async Task<string> UpdateDeck(DeckModel deck)
         {
             // Find the existing deck
             var existingDeck = await _dbContext.Decks.FindAsync(deck.DeckId);
@@ -59,10 +59,7 @@ namespace QuizMart.Repositories
             if (existingDeck != null)
             {
                 // Update the properties of the existing deck with the properties of the updated deck
-                existingDeck.Title = deck.Title;
-                existingDeck.Description = deck.Description;
-                existingDeck.PublishedAt = deck.PublishedAt;
-                existingDeck.ModeratorId = deck.ModeratorId;
+                _mapper.Map(deck, existingDeck);
 
                 // Save the changes
                 await _dbContext.SaveChangesAsync();
