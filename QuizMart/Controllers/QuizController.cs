@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using QuizMart.Models.DomainModels;
 using QuizMart.Models.ViewModels;
 using QuizMart.Repositories;
+using QuizMart.Services;
 
 namespace QuizMart.Controllers
 {
@@ -10,11 +11,13 @@ namespace QuizMart.Controllers
     [ApiController]
     public class QuizzesController : ControllerBase
     {
-        private readonly IQuizRepository _quizRepository;
+        private readonly IQuizService _quizService;
+        private readonly IChoiceRepository _choiceRepository;
 
-        public QuizzesController(IQuizRepository quizRepository)
+        public QuizzesController(IQuizService quizService, IChoiceRepository choiceRepository)
         {
-            _quizRepository = quizRepository;
+            _quizService = quizService;
+            _choiceRepository = choiceRepository;
         }
 
         #region Get-all-Quizzez
@@ -24,8 +27,8 @@ namespace QuizMart.Controllers
         {
             try
             {
-                var quizzes = await _quizRepository.GetAllQuizzes();
-                return Ok(quizzes);
+                var quizzes = await _quizService.GetAllQuizzes();
+               return Ok(quizzes);
             }
             catch (Exception ex)
             {
@@ -37,17 +40,12 @@ namespace QuizMart.Controllers
         #region Create-Quiz
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> CreateQuiz([FromBody] QuizModel quizModel)
+            public async Task<IActionResult> CreateQuiz([FromBody] QuizModel quizModel)
         {
-            if (quizModel == null)
-                return BadRequest("Quiz model cannot be null.");
-
-            if (quizModel.Choices == null || quizModel.Choices.Count == 0)
-                return BadRequest("Quiz must have at least one choice.");
-
+            
             try
-            {
-                await _quizRepository.AddQuizAsync(quizModel);
+            {   
+                await _quizService.AddQuizAsync(quizModel);
                 return Ok("Quiz created successfully.");
             }
             catch (Exception ex)
@@ -56,43 +54,70 @@ namespace QuizMart.Controllers
             }
         }
         #endregion
-
-        #region Get-all-Choices
-        [HttpGet]
-        [Route("Get-all-Choices")]
-        public async Task<IActionResult> GetAllChoices()
+        [HttpPut("update/{quizId}")]
+        public async Task<IActionResult> UpdateQuiz(Guid quizId, [FromBody] QuizModel quizModel)
         {
             try
             {
-                var choices = await _quizRepository.GetAllChoices();
-                return Ok(choices);
+                // Assign the QuizId from the route to the quizModel
+                quizModel.QuizID = quizId;
+
+                await _quizService.UpdateQuizAsync(quizModel);
+                return Ok("Quiz updated successfully.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-        #endregion
-
-        #region Create-Choice
-        [HttpPost]
-        [Route("Create-choice")]
-        public async Task<IActionResult> CreateChoice([FromBody] ChoiceModel choiceModel)
+        [HttpDelete("delete/{quizId}")]
+        public async Task<IActionResult> DeleteQuiz(Guid quizId)
         {
-            if (choiceModel == null)
-                return BadRequest("Choice model cannot be null.");
-
             try
             {
-                await _quizRepository.AddChoiceAsync(choiceModel);
-                return Ok("Choice created successfully.");
+                await _quizService.DeleteQuizAsync(quizId);
+                return Ok("Quiz deleted successfully.");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-        #endregion
 
+        [HttpGet("GetAllFavorites")]
+        public async Task<IActionResult> GetAllFavorites()
+        {
+            try
+            {
+                await _quizService.GetAllFavoriteQuizzesAsync();
+                return Ok("Get All Favorite Quizzes Successfully");
+            }
+            catch(Exception ex) { 
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+              
+
+        }
+        [HttpPatch("{quizID}/SetFavorite")]
+        public async Task<IActionResult> SetFavoriteStatus(Guid quizID)
+        {
+            try
+            {
+                await _quizService.SetQuizFavoriteStatusAsync(quizID);
+                return Ok("Set successfully!");
+            }
+            catch (Exception ex) {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+            
+        }
     }
 }

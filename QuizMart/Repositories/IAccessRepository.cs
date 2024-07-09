@@ -1,4 +1,5 @@
 ﻿using QuizMart.Models.ViewModels;
+using QuizMart.Models.DomainModels;
 
 namespace QuizMart.Repositories
 {

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using QuizMart.Context;
 using QuizMart.Models.DomainModels;
 using QuizMart.Models.ViewModels;
+using QuizMart.Repositories;
 using BC = global::BCrypt.Net.BCrypt;
 
 

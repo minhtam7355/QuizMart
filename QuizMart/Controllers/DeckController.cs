@@ -26,8 +26,15 @@ namespace QuizMart.Controllers
         [HttpGet("Get-all-Decks")]
         public async Task<IActionResult> GetAllDecks()
         {
-            var decks = await _deckService.GetAllDecks();
-            return Ok(decks);
+            try
+            {
+                var decks = await _deckService.GetAllDecksAsync();
+                return Ok(decks);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
         }
         #endregion
 
@@ -37,12 +44,14 @@ namespace QuizMart.Controllers
         {
             try
             {
-                await _deckService.AddDeck(deckModel);
-                return Ok("Request successfully");
+
+                await _deckService.AddDeckAsync(deckModel);
+                return Ok("Deck created successfully.");
+
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"Error: {ex.Message}");
             }
         }
         #endregion
@@ -51,12 +60,19 @@ namespace QuizMart.Controllers
         [HttpPut("Update-Deck")]
         public async Task<IActionResult> UpdateDeck([FromBody] DeckModel deckModel)
         {
-            var result = await _deckService.UpdateDeck(deckModel);
-            if (result == null)
+            try
             {
-                return Ok("Deck updated successfully.");
+                var result = await _deckService.UpdateDeckAsync(deckModel);
+                if (result == "Deck updated successfully")
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
-            return BadRequest("Failed to update deck.");
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
         }
         #endregion
 
@@ -64,12 +80,19 @@ namespace QuizMart.Controllers
         [HttpDelete("Delete-Deck")]
         public async Task<IActionResult> DeleteDeck([FromBody] Guid deckId)
         {
-            var result = await _deckService.DeleteDeck(deckId);
-            if (result == null)
+            try
             {
-                return Ok("Deck deleted successfully.");
+                var result = await _deckService.DeleteDeckAsync(deckId);
+                if (result == "Deck deleted successfully")
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
-            return BadRequest("Failed to delete deck.");
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
         }
         #endregion
 

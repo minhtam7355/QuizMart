@@ -53,8 +53,16 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 
 ////Connect to the database
 //builder.Services.AddDbContext<ESMSDbContext>(option =>
-//    option.UseSqlServer(builder.Configuration
-//    .GetConnectionString("ESMSConnectionString")));
+//  option.UseSqlServer(builder.Configuration
+//.GetConnectionString("ESMSConnectionString")));
+
+// Register services
+builder.Services.AddScoped<IQuizRepository, QuizRepository>();
+builder.Services.AddScoped<IChoiceRepository, ChoiceRepository>();
+// Add services to the container.
+builder.Services.AddControllers();
+builder.Services.AddDbContext<QuizMartDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDbContext<QuizMartDbContext>(options =>
        options.UseSqlServer(builder.Configuration.GetConnectionString("QuizMartConnectionString")));
@@ -65,9 +73,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IAccessRepository, AccessRepository>();
 builder.Services.AddScoped<IAccessService, AccessService>();
+builder.Services.AddScoped<IAccessService, AccessService>();
 builder.Services.AddScoped<IDeckService, DeckService>();
-builder.Services.AddScoped<IRequestService, RequestService>();
-
+builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();

@@ -9,8 +9,15 @@ namespace QuizMart.Repositories
     public interface IQuizRepository
     {
         Task AddQuizAsync(QuizModel quiz);
-        Task AddChoiceAsync(ChoiceModel choice);
-        Task<ICollection<Quiz>> GetAllQuizzes();
-        Task<ICollection<Choice>> GetAllChoices();
+
+        Task<List<QuizModel>> GetAllQuizzes();
+
+        Task UpdateQuizAsync(QuizModel quizModel);
+
+        Task DeleteQuizAsync(Guid quizId);
+
+        Task<List<QuizModel>> GetAllFavoriteQuizzesAsync();
+
+        Task<QuizModel> GetQuizByIdAsync(Guid quizId);
     }
 }
