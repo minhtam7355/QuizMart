@@ -15,5 +15,9 @@ namespace QuizMart.Repositories
         Task UpdateQuizAsync(QuizModel quizModel);
 
         Task DeleteQuizAsync(Guid quizId);
+
+        Task<List<QuizModel>> GetAllFavoriteQuizzesAsync();
+
+        Task<QuizModel> GetQuizByIdAsync(Guid quizId);
     }
 }

@@ -102,8 +102,22 @@ namespace QuizMart.Repositories
                 throw new ApplicationException("Error updating quiz.", ex);
             }
         }
+        public async Task<QuizModel> GetQuizByIdAsync(Guid quizId)
+        {
+             var quiz=await _context.Quizzes
+                                 .Include(q => q.Choices)
+                                 .FirstOrDefaultAsync(q => q.QuizId == quizId);
 
+            return _mapper.Map<QuizModel>(quiz);
+        }
+        public async Task<List<QuizModel>> GetAllFavoriteQuizzesAsync()
+        {
+            var quizzes = await  _context.Quizzes
+                                 .Where(q => q.Favorite == true)
+                                 .ToListAsync();
 
+            return _mapper.Map<List<QuizModel>>(quizzes);
+        }
 
         public async Task DeleteQuizAsync(Guid quizId)
         {
@@ -168,4 +182,5 @@ namespace QuizMart.Repositories
             }
         }
     }
+
 }

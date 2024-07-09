@@ -27,7 +27,31 @@ namespace QuizMart.Services
         {
              await _quizRepository.UpdateQuizAsync(quizModel);
         }
-
+        public async Task<List<QuizModel>> GetAllFavoriteQuizzesAsync()
+        {
+            return await _quizRepository.GetAllFavoriteQuizzesAsync();
+        }
+        public async Task SetQuizFavoriteStatusAsync(Guid quizId)
+        {
+            var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
+            if (quiz == null)
+            {
+                throw new KeyNotFoundException("Quiz not found.");
+            }
+            if(quiz.isFavorite == false) {
+                quiz.isFavorite = true;
+            }else
+            {
+                quiz.isFavorite = false;
+            }
+            
+            await _quizRepository.UpdateQuizAsync(quiz);
+        }
+        public async Task<QuizModel> GetQuizByIdAsync(Guid quizId)
+        {
+            var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
+            return quiz;
+        }
 
 
     }
