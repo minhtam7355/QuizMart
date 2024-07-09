@@ -4,6 +4,7 @@ using QuizMart.Models.DomainModels;
 using QuizMart.Models.ViewModels;
 using QuizMart.Repositories;
 using QuizMart.Services;
+using QuizMart.Services.IServices;
 
 namespace QuizMart.Controllers
 {

@@ -1,6 +1,6 @@
 ﻿using QuizMart.Models.ViewModels;
 
-namespace QuizMart.Services
+namespace QuizMart.Services.IServices
 {
     public interface IQuizService
     {
@@ -8,7 +8,7 @@ namespace QuizMart.Services
         Task<List<QuizModel>> GetAllQuizzesAsync();
         Task<QuizModel> GetQuizByIdAsync(Guid quizId);
         Task DeleteQuizAsync(Guid quizId);
-         Task UpdateQuizAsync(QuizModel quizModel);
+        Task UpdateQuizAsync(QuizModel quizModel);
 
         Task<List<QuizModel>> GetAllFavoriteQuizzesAsync();
         Task SetQuizFavoriteStatusAsync(Guid quizId);

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using QuizMart.Models.DomainModels;
 using QuizMart.Models.ViewModels;
 using QuizMart.Repositories;
+using QuizMart.Services.IServices;
 
 namespace QuizMart.Services
 {
