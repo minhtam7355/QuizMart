@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QuizMart.Models.ViewModels;
 using QuizMart.Repositories;
+using QuizMart.Services.IServices;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,13 +11,14 @@ namespace QuizMart.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
         private IConfiguration _config;
-        public UserController(IUserRepository userRepository, IConfiguration config)
+        public UserController(IUserService userService, IConfiguration config)
         {
-            _userRepository = userRepository;
+            _userService = userService;
             _config = config;
         }
 
@@ -22,7 +26,7 @@ namespace QuizMart.Controllers
         [HttpGet("Get-all-Users")]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _userRepository.GetAllUsers();
+            var users = await _userService.GetAllUsersAsync();
             return Ok(users);
         }
         #endregion
@@ -31,7 +35,7 @@ namespace QuizMart.Controllers
         [HttpPost("Add-User")]
         public async Task<IActionResult> AddUser([FromBody] UserInfo user)
         {
-            var result = await _userRepository.AddUser(user);
+            var result = await _userService.AddUserAsync(user);
             return Ok(result);
         }
         #endregion
@@ -40,7 +44,7 @@ namespace QuizMart.Controllers
         [HttpPut("Update-User")]
         public async Task<IActionResult> UpdateUser([FromBody] UserInfo user)
         {
-            var result = await _userRepository.UpdateUser(user);
+            var result = await _userService.UpdateUserAsync(user);
             return Ok(result);
         }
         #endregion
@@ -49,17 +53,27 @@ namespace QuizMart.Controllers
         [HttpDelete("Delete-User")]
         public async Task<IActionResult> DeleteUser([FromBody] Guid userId)
         {
-            var result = await _userRepository.DeleteUser(userId);
+            var result = await _userService.DeleteUserAsync(userId);
             return Ok(result);
         }
         #endregion
 
         #region Change Password
         [HttpPut("Change-Password")]
-        public async Task<IActionResult> ChangePassword(Guid userId, string oldPassword, string newPassword)
+        public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword)
         {
-            var result = await _userRepository.ChangePassword(userId, oldPassword, newPassword);
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.Sid).Value);
+            var result = await _userService.ChangePassword(userId, oldPassword, newPassword);
             return Ok(result);
+        }
+        #endregion
+
+        #region Get User By Id
+        [HttpGet("Get-User-By-Id")]
+        public async Task<IActionResult> GetUserById(Guid userId)
+        {
+            var user = await _userService.GetUserByIdAsync(userId);
+            return Ok(user);
         }
         #endregion
     }

@@ -1,13 +1,15 @@
-﻿using QuizMart.Models.ViewModels;
+﻿using QuizMart.Models.DomainModels;
+using QuizMart.Models.ViewModels;
 
 namespace QuizMart.Repositories
 {
     public interface IUserRepository
     {
-        Task<string> AddUser(UserInfo user);
+        Task<string> AddUser(User user);
         Task<string> DeleteUser(Guid userId);
-        Task<ICollection<UserInfo>> GetAllUsers();
-        Task<string> UpdateUser(UserInfo user);
+        Task<ICollection<User>> GetAllUsers();
+        Task<string> UpdateUser(User user);
+        Task<User> GetUserById(Guid userId);
         Task<string> ChangePassword(Guid userId,string oldPassword, string newPassword);
     }
 }
