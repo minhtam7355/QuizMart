@@ -56,6 +56,50 @@ namespace QuizMart.Services
                 return false;
             }
         }
+        public async Task<bool> EditDeckAsync(EditDeckVM deck, Guid hostId)
+        {
+            try
+            {
+                // Fetch the existing deck from the repository
+                var existingDeck = await _deckRepository.GetDeckByIdAsync(deck.DeckId);
+                if (existingDeck == null)
+                {
+                    return false; // Deck not found
+                }
+
+                // Map EditDeckVM to the existing Deck domain model
+                _mapper.Map(deck, existingDeck);
+
+                // Ensure HostId is assigned
+                existingDeck.HostId = hostId;
+
+                // Update Quizzes and Choices
+                foreach (var quiz in existingDeck.Quizzes)
+                {
+                    quiz.DeckId = existingDeck.DeckId; // Ensure DeckId is assigned to Quiz
+                    foreach (var choice in quiz.Choices)
+                    {
+                        choice.QuizId = quiz.QuizId; // Ensure QuizId is assigned to each Choice
+                    }
+                }
+
+                // Call AddDeckRequestAsync from RequestService for edit request
+                var requestAdded = await _requestService.AddDeckRequestAsync(existingDeck.DeckId, hostId);
+
+                if (!requestAdded)
+                {
+                    return false; // Optionally handle failure to add request
+                }
+
+                // Update deckDomain in the repository (or database)
+                return await _deckRepository.UpdateDeckAsync(existingDeck);
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
 
         public async Task<string> DeleteDeckAsync(Guid deckId)
         {

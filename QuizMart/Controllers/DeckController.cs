@@ -71,7 +71,35 @@ namespace QuizMart.Controllers
             }
         }
         #endregion
+        [HttpPost("edit-deck")]
+        public async Task<IActionResult> EditDeck([FromBody] EditDeckVM deck)
+        {
+            try
+            {
+                var hostIdString = User.FindFirstValue(ClaimTypes.Sid); // Ensure this matches your claim type
 
+                if (Guid.TryParse(hostIdString, out Guid hostId))
+                {
+                    var success = await _deckService.EditDeckAsync(deck, hostId);
+                    if (success)
+                    {
+                        return Ok("Deck edited successfully.");
+                    }
+                    else
+                    {
+                        return NotFound("Deck not found or could not be edited.");
+                    }
+                }
+                else
+                {
+                    return BadRequest("Invalid host ID format.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
         #region Update Deck
         [HttpPut("Update-Deck")]
         public async Task<IActionResult> UpdateDeck([FromBody] DeckModel deckModel)

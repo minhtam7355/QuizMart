@@ -15,7 +15,9 @@ namespace QuizMart.Services
         Task<List<Request>> GetAllPendingEditDeckRequestsAsync();
         Task<bool> ApproveAddDeckRequestAsync(Guid requestId, Guid modId);
         Task<bool> DenyAddDeckRequestAsync(Guid requestId, Guid modId);
-        Task<bool> ApproveEditDeckRequestAsync(Guid requestId);
-        Task<bool> DenyEditDeckRequestAsync(Guid requestId);
+        
+
+        Task<bool> ApproveEditDeckRequestAsync(Guid requestId, Guid modId);
+        Task<bool> DenyEditDeckRequestAsync(Guid requestId, Guid modId);
     }
 }
