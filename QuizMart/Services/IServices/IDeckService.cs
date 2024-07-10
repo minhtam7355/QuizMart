@@ -10,5 +10,9 @@ namespace QuizMart.Services.IServices
         Task<ICollection<DeckModel>> GetAllDecksAsync();
         Task<bool> UpdateDeckAsync(DeckModel deck);
         public Task<DeckModel> SearchDeckByKeyword(string keyword);
+
+        void ValidateQuizAdd(AddQuizVM quizModel);
+
+        void ValidateQuizUpdate(QuizModel quizModel);
     }
 }

@@ -41,6 +41,10 @@ namespace QuizMart.Controllers
         {
             try
             {
+                foreach (var quiz in deck.Quizzes)
+                {
+                    _deckService.ValidateQuizAdd(quiz);
+                }
                 var hostIdString = User.FindFirstValue(ClaimTypes.Sid); // Ensure this matches your claim type
 
                 if (Guid.TryParse(hostIdString, out Guid hostId))
@@ -74,6 +78,10 @@ namespace QuizMart.Controllers
         {
             try
             {
+                foreach (var quiz in deckModel.Quizzes)
+                {
+                    _deckService.ValidateQuizUpdate(quiz);
+                }
                 var result = await _deckService.UpdateDeckAsync(deckModel);
                 if (result)
                 {
@@ -116,7 +124,8 @@ namespace QuizMart.Controllers
             return Ok(deck);
         }
         #endregion
-
+       
     }
+
 
 }
