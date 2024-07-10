@@ -76,17 +76,16 @@ namespace QuizMart.Services
             return deckModel;
         }
 
-        public async Task<string> UpdateDeckAsync(DeckModel deck)
+        public async Task<bool> UpdateDeckAsync(DeckModel deck)
         {
             try
             {
                 var deckEntity = _mapper.Map<Deck>(deck);
-                var result = await _deckRepository.UpdateDeck(deckEntity);
-                return result;
+                return await _deckRepository.UpdateDeckAsync(deckEntity);
             }
             catch (Exception ex)
             {
-                return $"Error updating deck: {ex.Message}";
+                return false;
             }
         }
     }

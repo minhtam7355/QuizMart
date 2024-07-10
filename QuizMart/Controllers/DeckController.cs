@@ -75,11 +75,11 @@ namespace QuizMart.Controllers
             try
             {
                 var result = await _deckService.UpdateDeckAsync(deckModel);
-                if (result == "Deck updated successfully")
+                if (result)
                 {
-                    return Ok(result);
+                    return Ok("Deck updated successfully");
                 }
-                return BadRequest(result);
+                return BadRequest("Deck fail to update");
             }
             catch (Exception ex)
             {

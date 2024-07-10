@@ -63,7 +63,7 @@ namespace QuizMart.Controllers
             try
             {
                 // Assign the QuizId from the route to the quizModel
-                quizModel.QuizID = quizId;
+                quizModel.QuizId = quizId;
 
                 await _quizService.UpdateQuizAsync(quizModel);
                 return Ok("Quiz updated successfully.");

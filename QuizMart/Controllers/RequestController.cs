@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using QuizMart.Models.DomainModels;
 using QuizMart.Services;
+using QuizMart.Services.IServices;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace QuizMart.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Moderator")]
     public class RequestController : ControllerBase
     {
         private readonly IRequestService _requestService;
@@ -19,8 +22,8 @@ namespace QuizMart.Controllers
         }
 
         #region Get All Requests
-        [HttpGet("Get-All-Requests")]
-        public async Task<IActionResult> GetAllRequests()
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
         {
             try
             {
@@ -35,8 +38,8 @@ namespace QuizMart.Controllers
         #endregion
 
         #region Get Request by ID
-        [HttpGet("Get-Request-By-Id/{requestId}")]
-        public async Task<IActionResult> GetRequestById(Guid requestId)
+        [HttpGet("{requestId}")]
+        public async Task<IActionResult> GetById(Guid requestId)
         {
             try
             {
@@ -55,8 +58,8 @@ namespace QuizMart.Controllers
         #endregion
 
         #region Get All Pending Add Deck Requests
-        [HttpGet("Get-All-Pending-Add-Deck-Requests")]
-        public async Task<IActionResult> GetAllPendingAddDeckRequests()
+        [HttpGet("pending/add-deck")]
+        public async Task<IActionResult> GetPendingAddDeck()
         {
             try
             {
@@ -71,13 +74,78 @@ namespace QuizMart.Controllers
         #endregion
 
         #region Get All Pending Edit Deck Requests
-        [HttpGet("Get-All-Pending-Edit-Deck-Requests")]
-        public async Task<IActionResult> GetAllPendingEditDeckRequests()
+        [HttpGet("pending/edit-deck")]
+        public async Task<IActionResult> GetPendingEditDeck()
         {
             try
             {
                 var requests = await _requestService.GetAllPendingEditDeckRequestsAsync();
                 return Ok(requests);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region Approve Add Deck Request
+        [HttpPost("approve/add-deck/{requestId}")]
+        public async Task<IActionResult> ApproveAddDeck(Guid requestId)
+        {
+            try
+            {
+                var modIdString = User.FindFirstValue(ClaimTypes.Sid); // Ensure this matches your claim type
+
+                if (Guid.TryParse(modIdString, out Guid modId))
+                {
+                    var success = await _requestService.ApproveAddDeckRequestAsync(requestId, modId);
+                    if (success)
+                    {
+                        return Ok("Add deck request approved successfully.");
+                    }
+                    else
+                    {
+                        return NotFound("Add deck request not found or could not be approved.");
+                    }
+                }
+                else
+                {
+                    return BadRequest("Invalid moderator ID format.");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region Deny Add Deck Request
+        [HttpPost("deny/add-deck/{requestId}")]
+        public async Task<IActionResult> DenyAddDeck(Guid requestId)
+        {
+            try
+            {
+                var modIdString = User.FindFirstValue(ClaimTypes.Sid); // Ensure this matches your claim type
+
+                if (Guid.TryParse(modIdString, out Guid modId))
+                {
+                    var success = await _requestService.DenyAddDeckRequestAsync(requestId, modId);
+                    if (success)
+                    {
+                        return Ok("Add deck request denied successfully.");
+                    }
+                    else
+                    {
+                        return NotFound("Add deck request not found or could not be denied.");
+                    }
+                }
+                else
+                {
+                    return BadRequest("Invalid moderator ID format.");
+                }
             }
             catch (Exception ex)
             {

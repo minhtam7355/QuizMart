@@ -54,29 +54,28 @@ namespace QuizMart.Repositories
             return await _context.Decks.ToListAsync();
         }
 
+        public async Task<Deck?> GetDeckByIdAsync(Guid deckId)
+        {
+            return await _context.Decks.FindAsync(deckId);
+        }
+
         public async Task<Deck> SearchDeckByKeyword(string keyword)
         {
             return await _context.Decks.FirstOrDefaultAsync(d => d.Title.Contains(keyword));
         }
 
-        public async Task<string> UpdateDeck(Deck deck)
+        public async Task<bool> UpdateDeckAsync(Deck deck)
         {
             var existingDeck = await _context.Decks.FindAsync(deck.DeckId);
             if (existingDeck == null)
             {
-                return "Deck not found.";
+                return false;
             }
 
-            try
-            {
-                _context.Entry(existingDeck).CurrentValues.SetValues(deck);
-                await _context.SaveChangesAsync();
-                return "Deck updated successfully.";
-            }
-            catch (Exception ex)
-            {
-                return $"Error updating deck: {ex.Message}";
-            }
+            _context.Entry(existingDeck).CurrentValues.SetValues(deck);
+            await _context.SaveChangesAsync();
+            return true;
         }
+
     }
 }

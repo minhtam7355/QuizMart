@@ -61,5 +61,17 @@ namespace QuizMart.Repositories
             await _dbContext.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> UpdateRequestAsync(Request request)
+        {
+            var existingRequest = await _dbContext.Requests.FindAsync(request.RequestId);
+            if (existingRequest == null)
+            {
+                return false;
+            }
+
+            _dbContext.Entry(existingRequest).CurrentValues.SetValues(request);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
     }     
 }

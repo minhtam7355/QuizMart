@@ -42,7 +42,7 @@ namespace QuizMart.Services
             await _quizRepository.ExecuteInTransactionAsync(async () =>
             {
                 // Fetch the existing quiz from the database including choices
-                var existingQuiz = await _quizRepository.GetQuizByIdAsync(quizModel.QuizID);
+                var existingQuiz = await _quizRepository.GetQuizByIdAsync(quizModel.QuizId);
                 if (existingQuiz == null)
                     throw new KeyNotFoundException("Quiz not found.");
 

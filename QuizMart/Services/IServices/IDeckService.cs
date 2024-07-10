@@ -8,7 +8,7 @@ namespace QuizMart.Services.IServices
         Task<bool> AddDeckAsync(AddDeckVM deck, Guid hostId);
         Task<string> DeleteDeckAsync(Guid deckId);
         Task<ICollection<DeckModel>> GetAllDecksAsync();
-        Task<string> UpdateDeckAsync(DeckModel deck);
+        Task<bool> UpdateDeckAsync(DeckModel deck);
         public Task<DeckModel> SearchDeckByKeyword(string keyword);
     }
 }
