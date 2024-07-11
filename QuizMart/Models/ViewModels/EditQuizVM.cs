@@ -2,6 +2,7 @@
 {
     public class EditQuizVM
     {
+        public Guid QuizId { get; set; }
         public string? Type { get; set; }
 
         public string? QuestionText { get; set; }

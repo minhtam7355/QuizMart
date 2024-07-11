@@ -76,6 +76,10 @@ namespace QuizMart.Controllers
         {
             try
             {
+                foreach (var quiz in deck.Quizzes)
+                {
+                    _deckService.ValidateQuizEdit(quiz);
+                }
                 var hostIdString = User.FindFirstValue(ClaimTypes.Sid); // Ensure this matches your claim type
 
                 if (Guid.TryParse(hostIdString, out Guid hostId))
