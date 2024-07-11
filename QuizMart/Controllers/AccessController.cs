@@ -30,7 +30,7 @@ namespace QuizMart.Controllers
             IActionResult response = Unauthorized();
             var user = await _accessService.Login(model);
 
-            if (user != null)
+                if (user != null)
             {
                 var tokenString = GenerateJSONWebToken(user, model.RememberMe);
                 response = Ok(new { token = tokenString });
@@ -80,6 +80,8 @@ namespace QuizMart.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> Signup([FromBody] SignupModel model)
         {
+            if (model.Password != model.ConfirmPassword) return BadRequest("Password and confirm password must be the same");
+
             IActionResult response = Unauthorized();
 
             var success = await _accessService.Signup(model);

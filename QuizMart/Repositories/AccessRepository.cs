@@ -28,7 +28,14 @@ namespace QuizMart.Repositories
             if (user != null)
             {
                 if (!BC.EnhancedVerify(model.Password, user.PasswordHash)) { return null; }
-                return _mapper.Map<UserInfo>(user);
+                var roleId = user.RoleId;
+                if (roleId == null) return null;
+
+                var role = await _dbContext.Roles.FirstOrDefaultAsync(role => role.RoleId == roleId);
+                var userInfo = _mapper.Map<UserInfo>(user);
+                userInfo.Role = role?.RoleName;
+
+                return userInfo;
             }
 
             return null;
@@ -38,9 +45,12 @@ namespace QuizMart.Repositories
         {
             try
             {
-                var newStudent = _mapper.Map<User>(model);
+                var newUser = _mapper.Map<User>(model);
+                var role = await _dbContext.Roles.FirstOrDefaultAsync(role => role.RoleName == "FreeUser");
+                if (role == null) return false;
+                newUser.RoleId = role?.RoleId;
 
-                await _dbContext.Users.AddAsync(newStudent);
+                await _dbContext.Users.AddAsync(newUser);
                 await _dbContext.SaveChangesAsync();
 
                 return true;

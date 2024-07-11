@@ -71,12 +71,15 @@ builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IDeckRepository, DeckRepository>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IChoiceRepository, ChoiceRepository>();
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+
 
 builder.Services.AddScoped<IAccessService, AccessService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IDeckService, DeckService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
