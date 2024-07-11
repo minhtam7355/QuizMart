@@ -204,7 +204,13 @@ namespace QuizMart.Services
                 deck.ModeratorId = modId;
                 deck.PublishedAt = null; // Assuming you want to clear PublishedAt when denied
 
-                await _deckRepository.UpdateDeckAsync(deck);
+
+                // Check the result of UpdateDeckAsync
+                var updateSuccess = await _deckRepository.UpdateDeckAsync(deck);
+                if (!updateSuccess)
+                {
+                    return false;
+                }
             }
 
             return await _requestRepository.UpdateRequestAsync(request);
