@@ -50,6 +50,8 @@ namespace QuizMart.Services
             return await _requestRepository.AddRequestAsync(newRequest);
         }
 
+        
+
         public async Task<List<Request>> GetAllRequestsAsync()
         {
             return await _requestRepository.GetAllRequestsAsync();
@@ -139,14 +141,73 @@ namespace QuizMart.Services
             return await _requestRepository.UpdateRequestAsync(request);
         }
 
-        public async Task<bool> ApproveEditDeckRequestAsync(Guid requestId)
+        public async Task<bool> ApproveEditDeckRequestAsync(Guid requestId, Guid modId)
         {
-            return await _requestRepository.UpdateRequestStatusAsync(requestId, true, "EditDeckRequest");
+            var request = await _requestRepository.GetRequestByIdAsync(requestId);
+            if (request == null || request.RequestType != "EditDeckRequest")
+            {
+                return false;
+            }
+
+            request.RequestStatus = true;
+            request.ModeratorId = modId;
+
+            // Handle nullable DeckId
+            if (request.DeckId == null)
+            {
+                // Handle the scenario where DeckId is null (if necessary)
+                return false;
+            }
+
+            var deckId = request.DeckId.Value; // Extract the non-nullable Guid value
+            var deck = await _deckRepository.GetDeckByIdAsync(deckId);
+            if (deck != null)
+            {
+                deck.Status = "Approved";
+                deck.ModeratorId = modId;
+                deck.PublishedAt = DateTime.UtcNow;
+
+                // Check the result of UpdateDeckAsync
+                var updateSuccess = await _deckRepository.UpdateDeckAsync(deck);
+                if (!updateSuccess)
+                {
+                    return false;
+                }
+            }
+
+            return await _requestRepository.UpdateRequestAsync(request);
         }
 
-        public async Task<bool> DenyEditDeckRequestAsync(Guid requestId)
+        public async Task<bool> DenyEditDeckRequestAsync(Guid requestId, Guid modId)
         {
-            return await _requestRepository.UpdateRequestStatusAsync(requestId, false, "EditDeckRequest");
+            var request = await _requestRepository.GetRequestByIdAsync(requestId);
+            if (request == null || request.RequestType != "EditDeckRequest")
+            {
+                return false;
+            }
+
+            request.RequestStatus = false;
+            request.ModeratorId = modId;
+
+            // Handle nullable DeckId
+            if (request.DeckId == null)
+            {
+                // Handle the scenario where DeckId is null (if necessary)
+                return false;
+            }
+
+            var deckId = request.DeckId.Value; // Extract the non-nullable Guid value
+            var deck = await _deckRepository.GetDeckByIdAsync(deckId);
+            if (deck != null)
+            {
+                deck.Status = "Denied";
+                deck.ModeratorId = modId;
+                deck.PublishedAt = null; // Assuming you want to clear PublishedAt when denied
+
+                await _deckRepository.UpdateDeckAsync(deck);
+            }
+
+            return await _requestRepository.UpdateRequestAsync(request);
         }
     }
 }

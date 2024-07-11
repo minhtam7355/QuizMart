@@ -153,5 +153,69 @@ namespace QuizMart.Controllers
             }
         }
         #endregion
+
+        #region Approve Edit Deck Request
+        [HttpPost("approve/edit-deck/{requestId}")]
+        public async Task<IActionResult> ApproveEditDeck(Guid requestId)
+        {
+            try
+            {
+                var modIdString = User.FindFirstValue(ClaimTypes.Sid); // Ensure this matches your claim type
+
+                if (Guid.TryParse(modIdString, out Guid modId))
+                {
+                    var success = await _requestService.ApproveEditDeckRequestAsync(requestId, modId);
+                    if (success)
+                    {
+                        return Ok("Edit deck request approved successfully.");
+                    }
+                    else
+                    {
+                        return NotFound("Edit deck request not found or could not be approved.");
+                    }
+                }
+                else
+                {
+                    return BadRequest("Invalid moderator ID format.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region Deny Edit Deck Request
+        [HttpPost("deny/edit-deck/{requestId}")]
+        public async Task<IActionResult> DenyEditDeck(Guid requestId)
+        {
+            try
+            {
+                var modIdString = User.FindFirstValue(ClaimTypes.Sid); // Ensure this matches your claim type
+
+                if (Guid.TryParse(modIdString, out Guid modId))
+                {
+                    var success = await _requestService.DenyEditDeckRequestAsync(requestId, modId);
+                    if (success)
+                    {
+                        return Ok("Edit deck request denied successfully.");
+                    }
+                    else
+                    {
+                        return NotFound("Edit deck request not found or could not be denied.");
+                    }
+                }
+                else
+                {
+                    return BadRequest("Invalid moderator ID format.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+        #endregion
     }
 }
