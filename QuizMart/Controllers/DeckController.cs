@@ -35,6 +35,48 @@ namespace QuizMart.Controllers
             }
         }
         #endregion
+
+        #region Get All Public Decks
+        [HttpGet("public")]
+        public async Task<IActionResult> GetAllPublicDecks()
+        {
+            try
+            {
+                var decks = await _deckService.GetAllPublicDecksAsync();
+                return Ok(decks);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region Get All My Decks
+        [HttpGet("mydecks")]
+        public async Task<IActionResult> GetAllMyDecks()
+        {
+            try
+            {
+                var userIdString = User.FindFirstValue(ClaimTypes.Sid); // Ensure this matches your claim type
+
+                if (Guid.TryParse(userIdString, out Guid userId))
+                {
+                    var decks = await _deckService.GetAllMyDecksAsync(userId);
+                    return Ok(decks);
+                }
+                else
+                {
+                    return BadRequest("Invalid user ID format.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+        #endregion
+
         #region Add Deck
         [HttpPost]
         public async Task<IActionResult> AddDeck([FromBody] AddDeckVM deck)
@@ -70,6 +112,7 @@ namespace QuizMart.Controllers
                 return BadRequest($"Error: {ex.Message}");
             }
         }
+
         #endregion
         [HttpPut("edit-deck")]
         public async Task<IActionResult> EditDeck([FromBody] EditDeckVM deck)
@@ -104,30 +147,7 @@ namespace QuizMart.Controllers
                 return BadRequest($"Error: {ex.Message}");
             }
         }
-        #region Update Deck
-        [HttpPut("Update-Deck")]
-        public async Task<IActionResult> UpdateDeck([FromBody] DeckModel deckModel)
-        {
-            try
-            {
-                foreach (var quiz in deckModel.Quizzes)
-                {
-                    _deckService.ValidateQuizUpdate(quiz);
-                }
-                var result = await _deckService.UpdateDeckAsync(deckModel);
-                if (result)
-                {
-                    return Ok("Deck updated successfully");
-                }
-                return BadRequest("Deck fail to update");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Error: {ex.Message}");
-            }
-        }
-        #endregion
-
+        
         #region Delete Deck
         [HttpDelete("Delete-Deck")]
         public async Task<IActionResult> DeleteDeck([FromBody] Guid deckId)

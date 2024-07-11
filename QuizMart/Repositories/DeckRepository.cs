@@ -54,6 +54,19 @@ namespace QuizMart.Repositories
             return await _context.Decks.ToListAsync();
         }
 
+        public async Task<ICollection<Deck>> GetAllPublicDecks()
+        {
+            return await _context.Decks.Where(d => d.Status == "Approved")
+                                       .Include(d => d.Quizzes)
+                                       .ThenInclude(q => q.Choices)
+                                       .ToListAsync();
+        }
+
+        public async Task<ICollection<Deck>> GetAllMyDecks(Guid userId)
+        {
+            return await _context.Decks.Where(d => d.HostId == userId).Include(d => d.Quizzes).ThenInclude(q => q.Choices).ToListAsync();
+        }
+
         public async Task<Deck?> GetDeckByIdAsync(Guid deckId)
         {
             return await _context.Decks.FindAsync(deckId);
