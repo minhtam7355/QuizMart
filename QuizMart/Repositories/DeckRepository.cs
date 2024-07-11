@@ -51,7 +51,9 @@ namespace QuizMart.Repositories
 
         public async Task<ICollection<Deck>> GetAllDecks()
         {
-            return await _context.Decks.ToListAsync();
+            return await _context.Decks.Include(d => d.Quizzes)
+                                       .ThenInclude(q => q.Choices)
+                                       .ToListAsync();
         }
 
         public async Task<ICollection<Deck>> GetAllPublicDecks()
