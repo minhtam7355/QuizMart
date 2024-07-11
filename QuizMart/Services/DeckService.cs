@@ -38,7 +38,10 @@ namespace QuizMart.Services
                         choice.QuizId = quiz.QuizId; // Assign QuizId to each Choice
                     }
                 }
-
+                if(!await _deckRepository.AddDeckAsync(deckDomain))
+                {
+                    return false;
+                }
                 // Call AddDeckRequestAsync from RequestService
                 var requestAdded = await _requestService.AddDeckRequestAsync(deckDomain.DeckId, hostId);
 
@@ -48,7 +51,7 @@ namespace QuizMart.Services
                 }
 
                 // Add deckDomain to the repository (or database)
-                return await _deckRepository.AddDeckAsync(deckDomain);
+                return true;
                 
             }
             catch (Exception ex)
@@ -113,6 +116,20 @@ namespace QuizMart.Services
             return deckModels;
         }
 
+        public async Task<ICollection<DeckModel>> GetAllPublicDecksAsync()
+        {
+            var decks = await _deckRepository.GetAllPublicDecks();
+            var deckModels = _mapper.Map<ICollection<DeckModel>>(decks);
+            return deckModels;
+        }
+
+        public async Task<ICollection<DeckModel>> GetAllMyDecksAsync(Guid userId)
+        {
+            var decks = await _deckRepository.GetAllMyDecks(userId);
+            var deckModels = _mapper.Map<ICollection<DeckModel>>(decks);
+            return deckModels;
+        }
+
         public async Task<DeckModel> SearchDeckByKeyword(string keyword)
         {
             var deck = await _deckRepository.SearchDeckByKeyword(keyword);
@@ -135,8 +152,6 @@ namespace QuizMart.Services
 
         public void ValidateQuizAdd(AddQuizVM quizModel)
         {
-            try
-            {
 
                 if (quizModel == null)
                     throw new ArgumentException("Quiz model cannot be null.");
@@ -176,15 +191,7 @@ namespace QuizMart.Services
                 {
                     throw new ArgumentException("At least one choice must be marked as incorrect.");
                 }
-            }
-            catch (Exception ex)
-            {
-                // Log the exception or handle it as needed
-                Console.WriteLine($"An unexpected error occurred during validation: {ex.Message}");
-
-                // Optionally, rethrow the exception to be handled by the caller
-                throw new ApplicationException("An unexpected error occurred during validation.", ex);
-            }
+            
         }
         public void ValidateQuizEdit(EditQuizVM quizModel)
         {
