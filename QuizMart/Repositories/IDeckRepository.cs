@@ -5,7 +5,9 @@ namespace QuizMart.Repositories
 {
     public interface IDeckRepository
     {
-        public Task<ICollection<Deck>> GetAllDecks();
+        Task<ICollection<Deck>> GetAllDecks();
+        Task<ICollection<Deck>> GetAllPublicDecks();
+        Task<ICollection<Deck>> GetAllMyDecks(Guid userId);
         public Task<bool> AddDeckAsync(Deck deck);
         public Task<bool> UpdateDeckAsync(Deck deck);
         public Task<string> DeleteDeck(Guid deckId);
