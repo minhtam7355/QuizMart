@@ -29,23 +29,23 @@ namespace QuizMart.Repositories
             }
         }        
 
-        public async Task<string> DeleteDeck(Guid deckId)
+        public async Task<bool> DeleteDeck(Guid deckId)
         {
             var deck = await _context.Decks.FindAsync(deckId);
             if (deck == null)
             {
-                return "Deck not found.";
+                return false;
             }
 
             try
             {
                 _context.Decks.Remove(deck);
                 await _context.SaveChangesAsync();
-                return "Deck deleted successfully.";
+                return true;
             }
             catch (Exception ex)
             {
-                return $"Error deleting deck: {ex.Message}";
+                return false;
             }
         }
 

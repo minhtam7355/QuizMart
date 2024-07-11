@@ -10,7 +10,7 @@ namespace QuizMart.Repositories
         Task<ICollection<Deck>> GetAllMyDecks(Guid userId);
         public Task<bool> AddDeckAsync(Deck deck);
         public Task<bool> UpdateDeckAsync(Deck deck);
-        public Task<string> DeleteDeck(Guid deckId);
+        public Task<bool> DeleteDeck(Guid deckId);
         public Task<Deck> SearchDeckByKeyword(string keyword);
         public Task<Deck?> GetDeckByIdAsync(Guid deckId);
     }

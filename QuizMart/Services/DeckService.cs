@@ -72,31 +72,23 @@ namespace QuizMart.Services
 
                 // Map EditDeckVM to the existing Deck domain model
                 _mapper.Map(deck, existingDeck);
+                existingDeck.Status = null;
 
-                // Ensure HostId is assigned
-                existingDeck.HostId = hostId;
-
-                // Update Quizzes and Choices
-                foreach (var quiz in existingDeck.Quizzes)
+                if (!await _deckRepository.UpdateDeckAsync(existingDeck))
                 {
-                    quiz.DeckId = existingDeck.DeckId; // Ensure DeckId is assigned to Quiz
-                    foreach (var choice in quiz.Choices)
-                    {
-                        choice.QuizId = quiz.QuizId; // Ensure QuizId is assigned to each Choice
-                    }
+                    return false;
+                }
+                // Call EditDeckRequestAsync from RequestService
+                var requestEdited = await _requestService.EditDeckRequestAsync(existingDeck.DeckId, hostId);
+
+                if (!requestEdited)
+                {
+                    return false; // Optionally handle failure to edit request
                 }
 
-                // Call AddDeckRequestAsync from RequestService for edit request
-                var requestAdded = await _requestService.AddDeckRequestAsync(existingDeck.DeckId, hostId);
-
-                if (!requestAdded)
-                {
-                    return false; // Optionally handle failure to add request
-                }
-
-                // Update deckDomain in the repository (or database)
-                return await _deckRepository.UpdateDeckAsync(existingDeck);
-
+                // Edit existingDeck to the repository (or database)
+                return true;
+                
             }
             catch (Exception ex)
             {
@@ -104,7 +96,7 @@ namespace QuizMart.Services
             }
         }
 
-        public async Task<string> DeleteDeckAsync(Guid deckId)
+        public async Task<bool> DeleteDeckAsync(Guid deckId)
         {
             return await _deckRepository.DeleteDeck(deckId);
         }

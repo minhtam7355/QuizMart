@@ -145,17 +145,17 @@ namespace QuizMart.Controllers
         }
         
         #region Delete Deck
-        [HttpDelete("Delete-Deck")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteDeck([FromBody] Guid deckId)
         {
             try
             {
                 var result = await _deckService.DeleteDeckAsync(deckId);
-                if (result == "Deck deleted successfully")
+                if (result)
                 {
-                    return Ok(result);
+                    return Ok("Deck deleted successfully");
                 }
-                return BadRequest(result);
+                return BadRequest("Deck fail to delete");
             }
             catch (Exception ex)
             {
