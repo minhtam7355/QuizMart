@@ -11,12 +11,14 @@ namespace QuizMart.Services
         private readonly IDeckRepository _deckRepository;
         private readonly IMapper _mapper;
         private readonly IRequestService _requestService;
+        private readonly IQuizService _quizService;
 
-        public DeckService(IDeckRepository deckRepository, IMapper mapper, IRequestService requestService)
+        public DeckService(IDeckRepository deckRepository, IMapper mapper, IRequestService requestService, IQuizService quizService)
         {
             _deckRepository = deckRepository;
             _mapper = mapper;
             _requestService = requestService;
+            _quizService = quizService;
         }
 
         public async Task<bool> AddDeckAsync(AddDeckVM deck, Guid hostId)
@@ -77,14 +79,11 @@ namespace QuizMart.Services
                 foreach (var quiz in existingDeck.Quizzes)
                 {
                     quiz.DeckId = existingDeck.DeckId; // Ensure DeckId is assigned to Quiz
-                    foreach (var choice in quiz.Choices)
-                    {
-                        choice.QuizId = quiz.QuizId; // Ensure QuizId is assigned to each Choice
-                    }
+                     await _quizService.UpdateQuizAsync(_quizService.GetQuizByIdAsync(quiz.QuizId).Result); // Update Quiz
                 }
 
                 // Call AddDeckRequestAsync from RequestService for edit request
-                var requestAdded = await _requestService.AddDeckRequestAsync(existingDeck.DeckId, hostId);
+                var requestAdded = await _requestService.EditDeckRequestAsync(existingDeck.DeckId, hostId);
 
                 if (!requestAdded)
                 {

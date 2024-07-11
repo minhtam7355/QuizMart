@@ -24,13 +24,13 @@ namespace QuizMart.Repositories
             return true;
         }
 
-        public async Task<bool> AddEditDeckRequestAsync(Guid deckId, Guid hostId)
+        public async Task<bool> AddEditDeckRequestAsync(Request request)
         {
             var editDeckRequest = new Request
             {
                 RequestId = Guid.NewGuid(),
-                DeckId = deckId,
-                HostId = hostId,
+                DeckId = request.DeckId,
+                HostId = request.HostId,
                 RequestType = "EditDeckRequest",
                 RequestStatus = null, // or false, depending on how you want to handle initial status
                 RequestDate = DateTime.UtcNow

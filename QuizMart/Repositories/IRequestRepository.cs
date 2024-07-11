@@ -9,6 +9,8 @@ namespace QuizMart.Repositories
     {
         Task<bool> AddRequestAsync(Request request);
         Task<List<Request>> GetAllRequestsAsync();
+
+        Task<bool> AddEditDeckRequestAsync(Request request);
         Task<Request?> GetRequestByIdAsync(Guid requestId);
         Task<List<Request>> GetAllPendingAddDeckRequestsAsync();
         Task<List<Request>> GetAllPendingEditDeckRequestsAsync();

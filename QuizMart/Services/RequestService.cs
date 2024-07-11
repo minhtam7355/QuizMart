@@ -47,7 +47,7 @@ namespace QuizMart.Services
                 ModeratorId = null,
             };
 
-            return await _requestRepository.AddRequestAsync(newRequest);
+            return await _requestRepository.AddEditDeckRequestAsync(newRequest);
         }
 
         

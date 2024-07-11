@@ -71,7 +71,7 @@ namespace QuizMart.Controllers
             }
         }
         #endregion
-        [HttpPost("edit-deck")]
+        [HttpPut("edit-deck")]
         public async Task<IActionResult> EditDeck([FromBody] EditDeckVM deck)
         {
             try

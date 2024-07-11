@@ -9,6 +9,7 @@
 
         public bool Favorite { get; set; }
 
+
         public List<EditChoiceVM>? Choices { get; set; }
     }
 }
