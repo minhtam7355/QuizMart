@@ -15,9 +15,9 @@ namespace QuizMart.Helpers
 
             // ACCESS MAPPING
             CreateMap<User, UserInfo>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => "FreeUser"))
                 .ReverseMap();
+
+            CreateMap<UpdateProfileVM, User>();
 
             CreateMap<SignupModel, User>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()))
